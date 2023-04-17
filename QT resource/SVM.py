@@ -18,18 +18,19 @@ class mainapp(QMainWindow,FORM_CLASS):
         QMainWindow.__init__(self)
         self.setupUi(self)
         self.Handle_UI()
-        self.Handle_Button()
+        # self.Handle_Button()
 
     def Handle_UI(self):
         self.setWindowTitle('Smart Vending Machine')
+    # def go_to_page2(self):
+    #     loadUiType(path.join(path.dirname(__file__),"Home.ui"))
+# logo this is name for logo PushButton ,i changed it in qt designer
+#     def Handle_Button(self):
+#         page=NextPage().go_to_page2()
+#         self.logo.clicked.connect(page)
 
-#logo this is name for logo PushButton ,i changed it in qt designer
-    def Handle_Button(self):
-        page=NextPage().go_to_page2()
-        self.logo.clicked.connect(page)
 
-
-#the next page "Home page"
+# the next page "Home page"
 class NextPage(QtWidgets.QMainWindow):
     def __init__(self):
         super(NextPage, self).__init__()
