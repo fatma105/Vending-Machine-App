@@ -90,7 +90,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="logo">
+         <widget class="QPushButton" name="pushButton">
           <property name="styleSheet">
            <string notr="true">border-image: url(:/img/logoPrototype.png);</string>
           </property>
