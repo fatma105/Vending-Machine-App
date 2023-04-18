@@ -7,80 +7,88 @@ from PyQt5.uic import loadUiType
 import os
 from os import path
 import sys
-############import ui file###########
+from PyQt5 import QtWidgets, uic, QtGui
 
-FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "SVM.ui"))
+FORRM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "SVM.ui"))
 
 ######intiate ui file############
-class mainapp(QMainWindow,FORM_CLASS):
-    def __init__(self,parent=None):
-        super(mainapp,self).__init__(parent)
+class FirstClass(QMainWindow,FORRM_CLASS):
+    def __init__(self):
+        super().__init__()
         QMainWindow.__init__(self)
         self.setupUi(self)
+        self.pushButton.clicked.connect(self.switch)
         self.Handle_UI()
         # self.Handle_Button()
 
+
     def Handle_UI(self):
         self.setWindowTitle('Smart Vending Machine')
+    def switch(self):
+        stacked_widget.setCurrentIndex(1)
+
+
+FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "Home.ui"))
+class SecondClass(QMainWindow,FORM_CLASS):
+    def __init__(self, parent=None):
+        super().__init__()
+        QMainWindow.__init__(self)
+
+        self.setupUi(self)
+        self.Handle_product()
+
+
+#when make  FORM_CLASS comment and active go_to_page2 it display configration of lcd only
+#when make go_to_page2   comment and active  FORM_CLASS it display everything
     # def go_to_page2(self):
     #     loadUiType(path.join(path.dirname(__file__),"Home.ui"))
-# logo this is name for logo PushButton ,i changed it in qt designer
-#     def Handle_Button(self):
-#         page=NextPage().go_to_page2()
-#         self.logo.clicked.connect(page)
+    def Handle_product(self):
+        self.setWindowTitle('Page of Products')
+        self.setWindowIcon(QIcon('./img/download (4).jpg'))
+        # self.setMenuWidget()
+        #ProductImage
+        image_path=path.join(path.dirname(__file__),"./img/download (1).jpg")
+        pixmap = QPixmap(image_path)
+        icon = QIcon(pixmap)
+        self.pushButton_47.setIcon(icon)
+        self.pushButton_47.setIconSize(QSize(100, 100))
 
+        # ProductName
+        self.pushButton_5.setEnabled(False)
+        self.pushButton_5.setStyleSheet('color: black;')
+        font = QtGui.QFont("Times New Roman", 14)
+        self.pushButton_5.setFont(font)
+        #price
+        self.pushButton_6.setEnabled(False)
+        font = QtGui.QFont("Times New Roman", 12)
+        self.pushButton_6.setFont(font)
+        #LCD
+        self.lcdNumber_2.setSegmentStyle(QLCDNumber.Flat)
 
-# the next page "Home page"
-class NextPage(QtWidgets.QMainWindow):
-    def __init__(self):
-        super(NextPage, self).__init__()
-        self.go_to_page2()
-        self.Handle_lcd()
-        #self.show()
+        self.pushButton_13.clicked.connect(self.increaseNumber)
 
-    def go_to_page2(self):
-        loadUiType(path.join(path.dirname(__file__),"Home.ui"))
-
-    def Handle_lcd(self):
-        # Create LCD Number and set its properties
-        self.lcd = QLCDNumber(self)
-        self.lcd.display(0)
-        self.lcd.setSegmentStyle(QLCDNumber.Flat)
-        self.lcd.setFixedSize(50, 50)
-
-        # Create Plus Button and set its properties
-        self.plus_button = QPushButton("+", self)
-        self.plus_button.setFixedSize(30, 30)
-        self.plus_button.clicked.connect(self.increaseNumber)
-        # Create Subtract Button and set its properties
-        self.subtract_button = QPushButton("-", self)
-        self.subtract_button.setFixedSize(30, 30)
-        self.subtract_button.clicked.connect(self.decreaseNumber)
-        # Create horizontal Box Layout and add widgets to it
-        hbox = QVBoxLayout()
-        hbox.addWidget(self.lcd)
-        hbox.addWidget(self.plus_button)
-        hbox.addWidget(self.subtract_button)
-        self.setLayout(hbox)
+        self.pushButton_7.clicked.connect(self.decreaseNumber)
 
     def increaseNumber(self):
-        num = int(self.lcd.value())
+        num = int(self.lcdNumber_2.value())
         if num < 100:
             num += 1
-            self.lcd.display(num)
+            self.lcdNumber_2.display(num)
 
     def decreaseNumber(self):
-        num = int(self.lcd.value())
+        num = int(self.lcdNumber_2.value())
         if num > 0:
             num -= 1
-            self.lcd.display(num)
+            self.lcdNumber_2.display(num)
 
-def main():
-    app = QApplication(sys.argv)
-    window = mainapp()
-    window.show()
-    # Nextwindow=NextPage()
-    # Nextwindow.show()
-    app.exec_()
-if __name__=='__main__':
-    main()
+    def switch(self):
+        stacked_widget.setCurrentIndex(0)
+
+app = QApplication(sys.argv)
+stacked_widget = QStackedWidget()
+first_class = FirstClass()
+second_class = SecondClass()
+stacked_widget.addWidget(first_class)
+stacked_widget.addWidget(second_class)
+stacked_widget.show()
+sys.exit(app.exec_())
