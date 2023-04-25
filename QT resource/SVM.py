@@ -17,10 +17,18 @@ class FirstClass(QMainWindow,FORRM_CLASS):
         super().__init__()
         QMainWindow.__init__(self)
         self.setupUi(self)
+        self.centralwidget= QGridLayout()
+        self.setLayout(self.centralwidget)
+        # Get the size of the user's screen
+        screen_size = QDesktopWidget().screenGeometry()
+
+        # Set the size of the window to fit the screen
+        self.setGeometry(0, 0, screen_size.width(), screen_size.height())
         self.pushButton.clicked.connect(self.switch)
         self.Handle_UI()
-        # self.Handle_Button()
 
+
+        # self.Handle_Button()
 
     def Handle_UI(self):
         self.setWindowTitle('Smart Vending Machine')
@@ -28,7 +36,7 @@ class FirstClass(QMainWindow,FORRM_CLASS):
         stacked_widget.setCurrentIndex(1)
 
 
-FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "Home.ui"))
+FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "Homme.ui"))
 class SecondClass(QMainWindow,FORM_CLASS):
     def __init__(self, parent=None):
         super().__init__()
@@ -36,6 +44,12 @@ class SecondClass(QMainWindow,FORM_CLASS):
 
         self.setupUi(self)
         self.Handle_product()
+        # Get the size of the user's screen
+        screen_size = QDesktopWidget().screenGeometry()
+        # Set the size of the window to fit the screen
+        self.setGeometry(0, 0, screen_size.width(), screen_size.height())
+        self.pushButton_5.clicked.connect(self.switch)
+
 
 
 #when make  FORM_CLASS comment and active go_to_page2 it display configration of lcd only
@@ -49,23 +63,31 @@ class SecondClass(QMainWindow,FORM_CLASS):
         #ProductImage
         image_path=path.join(path.dirname(__file__),"./img/download (1).jpg")
         pixmap = QPixmap(image_path)
-        icon = QIcon(pixmap)
-        self.pushButton_47.setIcon(icon)
-        self.pushButton_47.setIconSize(QSize(100, 100))
+        # icon = QIcon(pixmap)
+        # self.pushButton_47.setIcon(icon)
+        # self.pushButton_47.setIconSize(QSize(100, 100))
+        # Load an image file into a QPixmap object
+
+
+        # Set the pixmap as the label's image
+        self.label.setPixmap(pixmap)
+
+        # Resize the label to fit the image
+        self.label.resize(100, 100)
 
         # ProductName
-        self.pushButton_5.setEnabled(False)
-        self.pushButton_5.setStyleSheet('color: black;')
+        self.pushButton_41.setEnabled(False)
+        self.pushButton_41.setStyleSheet('color: black;')
         font = QtGui.QFont("Times New Roman", 14)
-        self.pushButton_5.setFont(font)
+        self.pushButton_41.setFont(font)
         #price
-        self.pushButton_6.setEnabled(False)
+        self.pushButton_42.setEnabled(False)
         font = QtGui.QFont("Times New Roman", 12)
-        self.pushButton_6.setFont(font)
+        self.pushButton_42.setFont(font)
         #LCD
         self.lcdNumber_2.setSegmentStyle(QLCDNumber.Flat)
 
-        self.pushButton_13.clicked.connect(self.increaseNumber)
+        self.plus_button.clicked.connect(self.increaseNumber)
 
         self.pushButton_7.clicked.connect(self.decreaseNumber)
 
