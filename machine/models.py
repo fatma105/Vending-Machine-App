@@ -4,14 +4,13 @@ import time
 
 
 config={
-  "apiKey": "AIzaSyDg5oOM_a9Rt2v1DsIfU1bcgx-DhZDEgBQ",
-  "authDomain": "svm-app-882ba.firebaseapp.com",
-  "databaseURL": "https://svm-app-882ba-default-rtdb.europe-west1.firebasedatabase.app",
-  "projectId": "svm-app-882ba",
-  "storageBucket": "svm-app-882ba.appspot.com",
-  "messagingSenderId": "620693371552",
-  "appId": "1:620693371552:web:b1e5aced6be7d8e8fee7c5",
-  "measurementId": "G-TLE7CVF9C8"
+   "apiKey": "AIzaSyBMjuS7yAjgHWUY-VxX7y6TSYDzu6C2E3c",
+  "authDomain": "sigin-a0a4b.firebaseapp.com",
+  "databaseURL": "https://sigin-a0a4b-default-rtdb.firebaseio.com",
+  "projectId": "sigin-a0a4b",
+  "storageBucket": "sigin-a0a4b.appspot.com",
+  "messagingSenderId": "139412624194",
+  "appId": "1:139412624194:web:39fb80ba1b0dc4cef2aedb"
 }
 
 
@@ -27,14 +26,14 @@ def initialize_machine(email, password):
     try:
         machine = auth.sign_in_with_email_and_password(email, password)
         #db.child('machines').child(machine['localId']).child('state').set(1)
-        return VendingMachineController(machine)
+        return VendingMachine(machine)
     except Exception as e:
 
         print("Error logging in ")
         # Catch the exception and return the error message
         return None
 
-class VendingMachineController:
+class VendingMachine:
     def __init__(self,machine_info):
         self.machine_id=machine_info['localId']
         self.id_token=machine_info['idToken'] 
@@ -42,7 +41,14 @@ class VendingMachineController:
         try:
             self.machine=Machine(self.machine_id)
         except:
-            raise ValueError("Error intializing machine")   
+            raise ValueError("Error intializing machine") 
+         
+                  
+    def get_product_by_slot(self,slot):
+        for product in self.machine.get_products():
+            if product.postion==slot:
+                return product 
+        return None    
     
     #returns a list of all products information
     #show products
@@ -52,18 +58,18 @@ class Machine:
     def __init__(self,machine_id):
         self.machine_id=machine_id
         self._machine_info=self.get_machine_data()
-       
+        self.products=None
         if self._machine_info!=None:
             self.name=self._machine_info["name"] 
             self.slots=self._machine_info["slots"]
         else:
-            raise ValueError("Error retrieving machine")    
-       
+            raise ValueError("Error retrieving machine")   
+        
         self._products=self.get_products()    
         if self._products!=None:
             self.products=self._products    
         else:
-            raise ValueError("Error retrieving products")                 
+            raise ValueError("Error retrieving products")                       
     #state function
     def set_available(self):
         if len(self.products) == 0:
@@ -99,26 +105,22 @@ class Machine:
         except:
             print("Error retriveing data")    
             return None
-
     def get_products(self):
-        products=[]
-        try:
-            productref=db.child('machine-products').child(self.machine_id).get().each()
-        except:
-            print("Error getting products")
-            return None
-        
-        for product in productref:
-            products.append(Product(self.machine_id,product.key()))
+            products=[]
+            try:
+                productref=db.child('machine-products').child(self.machine_id).get().each()
+            except:
+                print("Error getting products")
+                return None
             
-        products.sort(key=lambda p: p.postion)  
-        return products 
-          
-    def get_product_by_slot(self,slot):
-        for product in self.products:
-            if product.postion==slot:
-                return product 
-        return None    
+            for product in productref:
+                products.append(Product(self.machine_id,product.key()))
+                
+            products.sort(key=lambda p: p.postion)  
+            return products    
+     
+#move to machine class
+   
          
        
 
@@ -169,15 +171,24 @@ class Product:
       
         
     
-#payment
+#order class
 class Order:
     def __init__(self) -> None:
         pass
-    
-#hardware
-class MachineHardware:
-    def __init__(self) -> None:
-        pass
+
+
+
+#Payment
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -188,14 +199,8 @@ class MachineHardware:
 
 signin_info=auth.sign_in_with_email_and_password("machine@mail.com",123456)
 
-
-
-
-
-
 machine=initialize_machine("machine@mail.com","123456")
 
-print(vars(machine))
 
 
 
