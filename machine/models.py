@@ -1,5 +1,4 @@
 import pyrebase
-
 import time
 
 
@@ -43,7 +42,12 @@ class VendingMachine:
         except:
             raise ValueError("Error intializing machine") 
          
-                  
+
+    def get_products(self):
+        
+       return self.machine.get_products()
+
+    
     def get_product_by_slot(self,slot):
         for product in self.machine.get_products():
             if product.postion==slot:
@@ -134,7 +138,7 @@ class Product:
         self.imgUrl=product['img']
         self.price=product['price']
         self.amount=product['amount'] 
-        self.postion=product['postion']
+        self.postion=product['postion'] 
     def get_product_data(self):
         product=db.child('machine-products').child(self.machine_id).child(self.product_id).get().val()
         return product
@@ -173,8 +177,43 @@ class Product:
     
 #order class
 class Order:
-    def __init__(self) -> None:
-        pass
+    def __init__(self):
+        self.items = []  # List to store the items in the order
+        self.total=0
+
+    def add_item(self, product, quantity=1):
+        if product.amount<quantity:
+            raise ValueError("Not enough inventory")
+       
+        self.items.append({
+            'product': product,
+            'quantity': quantity,
+            'subtotal':product.price*quantity
+        })
+        self.total+=product.price*quantity
+
+        print(f"{quantity} {product.name}(s) added to the order.")
+    def view_order(self):
+        if self.items:
+            print("Items in the order:")
+            for item in self.items:
+                
+                print(f"{item['product'].name}: {item['quantity']} x ${item['product'].price} = ${item['subtotal']}")
+            print(f"Total: ${self.total}")
+        else:
+            print("The order is empty.")
+
+    # def process_payment(self):
+    #     if self.items:
+    #         total = 0
+    #         for item in self.items:
+    #             subtotal = item['product'].price * item['quantity']
+    #             total += subtotal
+    #             # Perform any payment processing operations here, such as charging the customer, updating sales, etc.
+    #         print(f"Payment processed successfully. Total amount: ${total}")
+    #         self.items = []  # Clear the items in the order after processing the payment
+    #     else:
+    #         print("Cannot process an empty order.")
 
 
 
