@@ -8,35 +8,6 @@ import os
 from os import path
 import sys
 from PyQt5 import QtWidgets, uic, QtGui
-# from models import Product
-FORRM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "SVM.ui"))
-
-######intiate ui file############
-class FirstClass(QMainWindow,FORRM_CLASS):
-    def __init__(self):
-        super().__init__()
-        QMainWindow.__init__(self)
-        self.setupUi(self)
-        self.centralwidget= QGridLayout()
-        self.setLayout(self.centralwidget)
-        # Get the size of the user's screen
-        screen_size = QDesktopWidget().screenGeometry()
-
-        # Set the size of the window to fit the screen
-        self.setGeometry(0, 0, screen_size.width(), screen_size.height())
-        self.pushButton.clicked.connect(self.switch)
-        self.Handle_UI()
-
-        # self.Handle_Button()
-
-    def Handle_UI(self):
-        self.setWindowTitle('Smart Vending Machine')
-
-    def switch(self):
-        stacked_widget.setCurrentIndex(1)
-
-
-
 FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "fixedpage.ui"))
 class ProductClass(QMainWindow,FORM_CLASS):
     def __init__(self, parent=None):
@@ -55,7 +26,6 @@ class ProductClass(QMainWindow,FORM_CLASS):
         screen_size = QDesktopWidget().screenGeometry()
         # Set the size of the window to fit the screen
         self.setGeometry(0, 0, screen_size.width(), screen_size.height())
-        self.pushButton_5.clicked.connect(self.switch)
     def Handle_product1(self):
                 #ProductImage
                 image_path=path.join(path.dirname(__file__),"./img/download (1).jpg")
@@ -195,15 +165,11 @@ class ProductClass(QMainWindow,FORM_CLASS):
         if num > 0:
             num -= 1
             self.lcdNumber_5.display(num)
-    def switch(self):
-        stacked_widget.setCurrentIndex(0)
+def main():
+    app = QApplication(sys.argv)
+    Nextwindow=ProductClass()
+    Nextwindow.show()
 
-app = QApplication(sys.argv)
-stacked_widget = QStackedWidget()
-first_class = FirstClass()
-second_class = ProductClass()
-stacked_widget.addWidget(first_class)
-stacked_widget.addWidget(second_class)
-stacked_widget.show()
-sys.exit(app.exec_())
-
+    app.exec_()
+if __name__=='__main__':
+    main()
