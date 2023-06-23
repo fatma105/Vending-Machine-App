@@ -41,6 +41,7 @@ class VendingMachine:
             self.machine=Machine(self.machine_id)
         except:
             raise ValueError("Error intializing machine") 
+        self.order=Order()
          
 
     def get_products(self):
@@ -52,7 +53,12 @@ class VendingMachine:
         for product in self.machine.get_products():
             if product.postion==slot:
                 return product 
-        return None    
+        return None  
+#order logic
+    def add_item_to_cart(self, product, quantity=1):
+        self.order.add_item(product,quantity)
+    def view_order(self):
+        self.order.view_order()    
     
     #returns a list of all products information
     #show products
@@ -180,11 +186,12 @@ class Order:
     def __init__(self):
         self.items = []  # List to store the items in the order
         self.total=0
+        self.status=0
 
     def add_item(self, product, quantity=1):
         if product.amount<quantity:
             raise ValueError("Not enough inventory")
-       
+        
         self.items.append({
             'product': product,
             'quantity': quantity,
@@ -225,24 +232,22 @@ class Order:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-signin_info=auth.sign_in_with_email_and_password("machine@mail.com",123456)
-
 machine=initialize_machine("machine@mail.com","123456")
 
 
 
+products=machine.get_products()
 
+for product in products:
+    print(vars(product))
+
+picked_item=input("item: ")
+
+item_amount=input("amount: ")
+
+machine.add_item_to_cart(products[int(picked_item)] , int(item_amount))
+
+machine.view_order()
 
 #tests
 
