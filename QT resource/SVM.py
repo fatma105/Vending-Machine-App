@@ -7,8 +7,6 @@ from PyQt5.uic import loadUiType
 import os
 from os import path
 import sys
-from PyQt5 import QtWidgets, uic, QtGui
-# from models import Product
 FORRM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "SVM.ui"))
 
 ######intiate ui file############
@@ -21,13 +19,10 @@ class FirstClass(QMainWindow,FORRM_CLASS):
         self.setLayout(self.centralwidget)
         # Get the size of the user's screen
         screen_size = QDesktopWidget().screenGeometry()
-
         # Set the size of the window to fit the screen
         self.setGeometry(0, 0, screen_size.width(), screen_size.height())
         self.pushButton.clicked.connect(self.switch)
         self.Handle_UI()
-
-        # self.Handle_Button()
 
     def Handle_UI(self):
         self.setWindowTitle('Smart Vending Machine')
@@ -35,10 +30,8 @@ class FirstClass(QMainWindow,FORRM_CLASS):
     def switch(self):
         stacked_widget.setCurrentIndex(1)
 
-
-
-FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "fixedpage.ui"))
-class ProductClass(QMainWindow,FORM_CLASS):
+FORM_CLASS1, _ = loadUiType(path.join(path.dirname(__file__), "fixedpage.ui"))
+class ProductClass(QMainWindow,FORM_CLASS1):
     def __init__(self, parent=None):
         super().__init__()
         QMainWindow.__init__(self)
@@ -56,6 +49,7 @@ class ProductClass(QMainWindow,FORM_CLASS):
         # Set the size of the window to fit the screen
         self.setGeometry(0, 0, screen_size.width(), screen_size.height())
         self.pushButton_5.clicked.connect(self.switch)
+        self.pushButton_6.clicked.connect(self.switchOrder)
     def Handle_product1(self):
                 #ProductImage
                 image_path=path.join(path.dirname(__file__),"./img/download (1).jpg")
@@ -197,13 +191,42 @@ class ProductClass(QMainWindow,FORM_CLASS):
             self.lcdNumber_5.display(num)
     def switch(self):
         stacked_widget.setCurrentIndex(0)
+    def switchOrder(self):
+        stacked_widget.setCurrentIndex(2)
+
+FORM_CLASS2, _ = loadUiType(path.join(path.dirname(__file__), "order.ui"))
+
+class CheckoutWindow(QMainWindow,FORM_CLASS2):
+    def __init__(self,parent=None):
+        super().__init__(parent)
+        QMainWindow.__init__(self)
+        self.setupUi(self)
+        self.Handel_order()
+
+        self.pushButton_back.clicked.connect(self.switchOrder)
+    def Handel_order(self):
+        self.setWindowTitle('Checkout')
+        #Date
+        date = "10/10"
+        self.pushButton_2.setText(date)
+        self.pushButton_2.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
+        #list of products
+        self.listWidget.addItems(['Item 1', 'Item 2', 'Item 3'])
+        #total price
+        total_price = "100$"
+        self.pushButton_4.setText(total_price)
+        self.pushButton_4.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
+    def switchOrder(self):
+        stacked_widget.setCurrentIndex(1)
 
 app = QApplication(sys.argv)
 stacked_widget = QStackedWidget()
 first_class = FirstClass()
 second_class = ProductClass()
+thrid_class = CheckoutWindow()
 stacked_widget.addWidget(first_class)
 stacked_widget.addWidget(second_class)
+stacked_widget.addWidget(thrid_class)
 stacked_widget.show()
 sys.exit(app.exec_())
 
