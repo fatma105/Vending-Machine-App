@@ -13,8 +13,6 @@ class Register(QMainWindow, FORM_CLASS):
         self.Handle_signup()
 
     def Handle_register(self):
-        name=self.lineEdit.text()
-        print(name)
         email=self.lineEdit_2.text()
         print(email)
         password =self.lineEdit_3.text()
