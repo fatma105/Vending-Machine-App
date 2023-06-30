@@ -1,4 +1,5 @@
 import pyrebase
+import datetime
 import time
 
 
@@ -24,7 +25,6 @@ storage = firebase.storage()
 def initialize_machine(email, password):
     try:
         machine = auth.sign_in_with_email_and_password(email, password)
-        #db.child('machines').child(machine['localId']).child('state').set(1)
         return VendingMachine(machine)
     except Exception as e:
 
@@ -41,7 +41,7 @@ class VendingMachine:
             self.machine=Machine(self.machine_id)
         except:
             raise ValueError("Error intializing machine") 
-        self.order=Order()
+        self.order=Order(machine_id=self.machine_id)
          
 
     def get_products(self):
@@ -51,14 +51,17 @@ class VendingMachine:
     
     def get_product_by_slot(self,slot):
         for product in self.machine.get_products():
-            if product.postion==slot:
+            if product.position==slot:
                 return product 
         return None  
 #order logic
     def add_item_to_cart(self, product, quantity=1):
         self.order.add_item(product,quantity)
-    def view_order(self):
-        self.order.view_order()    
+    def view_cart(self):
+        self.order.view_order()  
+    def clear_cart(self):
+        self.order.clear_cart()    
+
     
     #returns a list of all products information
     #show products
@@ -126,7 +129,7 @@ class Machine:
             for product in productref:
                 products.append(Product(self.machine_id,product.key()))
                 
-            products.sort(key=lambda p: p.postion)  
+            products.sort(key=lambda p: p.position)  
             return products    
      
 #move to machine class
@@ -141,10 +144,10 @@ class Product:
         self.product_id=product_id
         product=self.get_product_data()
         self.name=product['name']
-        self.imgUrl=product['img']
+        self.imgUrl=product['image']
         self.price=product['price']
         self.amount=product['amount'] 
-        self.postion=product['postion'] 
+        self.position=product['position'] 
     def get_product_data(self):
         product=db.child('machine-products').child(self.machine_id).child(self.product_id).get().val()
         return product
@@ -183,10 +186,12 @@ class Product:
     
 #order class
 class Order:
-    def __init__(self):
+    def __init__(self,machine_id):
         self.items = []  # List to store the items in the order
         self.total=0
         self.status=0
+        self.machine_id=machine_id
+        self.order_id=None
 
     def add_item(self, product, quantity=1):
         if product.amount<quantity:
@@ -210,31 +215,59 @@ class Order:
         else:
             print("The order is empty.")
 
-    # def process_payment(self):
-    #     if self.items:
-    #         total = 0
-    #         for item in self.items:
-    #             subtotal = item['product'].price * item['quantity']
-    #             total += subtotal
-    #             # Perform any payment processing operations here, such as charging the customer, updating sales, etc.
-    #         print(f"Payment processed successfully. Total amount: ${total}")
-    #         self.items = []  # Clear the items in the order after processing the payment
-    #     else:
-    #         print("Cannot process an empty order.")
+    def save_order(self):
+        items=[]
+        for item in self.items:
+            product=item['product']
+            quantity=item['quantity']
+            subtotal=item['subtotal']
+            items={
+               product.product_id:{'name':product.name,'price':product.price,'quantity':quantity,'subtotal':subtotal }
+            }
+        machine_order={
+            'order':items,
+            'status':0,
+            'total':self.total,
+            'timestamp':datetime.datetime.now().timestamp()
+        }
+        self.order_id=db.generate_key()
+        db.child('machine-orders').child(self.machine_id).child(self.order_id).set(machine_order)    
+   
+    def clear_cart(self):
+        self.items = []  # List to store the items in the order
+        self.total=0
+        self.status=0
+        self.order_id=None
 
 
 
 #Payment
+class ProcessOrder:
+    def __init__(self,order):
+        self.order=order
+        self.order_status_stream = None
+   
+    def order_status_stream_handler(self,message):
+        if message["event"] == "put":
+            order_status = message["data"]
+            print("Order status updated:", order_status)
+            self.order.status=order_status
+
+
+    def process_order(self):
+        self.order_status_stream = db.child("machine-orders").child(self.order.machine_id).child(self.order.order_id).child("status").stream(self.order_status_stream_handler)
+
+    def close_stream(self):
+        if self.order_status_stream:
+            self.order_status_stream.close()
 
 
 
 
+# Set up the stream on the order status path
 
 
-
-machine=initialize_machine("machine@mail.com","123456")
-
-
+machine=initialize_machine("machine@gmail.com","123456789")
 
 products=machine.get_products()
 
@@ -247,7 +280,23 @@ item_amount=input("amount: ")
 
 machine.add_item_to_cart(products[int(picked_item)] , int(item_amount))
 
-machine.view_order()
+machine.view_cart()
+
+machine.order.save_order()
+
+payment=ProcessOrder(machine.order)
+
+payment.listen_for_order()
+
+
+
+
+
+
+
+
+
+
 
 #tests
 
