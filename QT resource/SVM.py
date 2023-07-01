@@ -7,6 +7,7 @@ from PyQt5.uic import loadUiType
 import os
 from os import path
 import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 FORRM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "SVM.ui"))
 
 ######intiate ui file############
@@ -15,12 +16,10 @@ class FirstClass(QMainWindow,FORRM_CLASS):
         super().__init__()
         QMainWindow.__init__(self)
         self.setupUi(self)
-        self.centralwidget= QGridLayout()
-        self.setLayout(self.centralwidget)
-        # Get the size of the user's screen
-        screen_size = QDesktopWidget().screenGeometry()
-        # Set the size of the window to fit the screen
-        self.setGeometry(0, 0, screen_size.width(), screen_size.height())
+        # # Get the size of the user's screen
+        # screen_size = QDesktopWidget().screenGeometry()
+        # # Set the size of the window to fit the screen
+        # self.setGeometry(0, 0, screen_size.width(), screen_size.height())
         self.pushButton.clicked.connect(self.switch)
         self.Handle_UI()
 
@@ -58,7 +57,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 self.label.setPixmap(pixmap)
 
                 # Resize the label to fit the image
-                self.label.resize(100, 100)
+                # self.label.resize(100, 100)
 
                 # Set the alignment of the label to center
                 self.label.setAlignment(Qt.AlignCenter)
@@ -93,7 +92,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 self.label_2.setPixmap(pixmap)
 
                 # Resize the label to fit the image
-                self.label_2.resize(100,80 )
+                # self.label_2.resize(100,80 )
                 # Set the alignment of the label to center
                 self.label_2.setAlignment(Qt.AlignCenter)
 
@@ -128,7 +127,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 self.label_3.setPixmap(pixmap)
 
                 # Resize the label to fit the image
-                self.label_3.resize(100,80 )
+                # self.label_3.resize(100,80 )
                 # Set the alignment of the label to center
                 self.label_3.setAlignment(Qt.AlignCenter)
                 # ProductName
@@ -162,7 +161,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 self.label_4.setPixmap(pixmap)
 
                 # Resize the label to fit the image
-                self.label_4.resize(100,80 )
+                # self.label_4.resize(100,80 )
                 # Set the alignment of the label to center
                 self.label_4.setAlignment(Qt.AlignCenter)
                 # ProductName
