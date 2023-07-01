@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>965</width>
-    <height>665</height>
+    <width>800</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,8 +53,8 @@ QLCDNumber {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>941</width>
-         <height>616</height>
+         <width>776</width>
+         <height>431</height>
         </rect>
        </property>
        <property name="minimumSize">
