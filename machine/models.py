@@ -1,7 +1,7 @@
 import pyrebase
 import datetime
 import time
-
+import threading
 
 config={
    "apiKey": "AIzaSyBMjuS7yAjgHWUY-VxX7y6TSYDzu6C2E3c",
@@ -42,6 +42,7 @@ class VendingMachine:
         except:
             raise ValueError("Error intializing machine") 
         self.order=Order(machine_id=self.machine_id)
+        self._process_order=None
          
 
     def get_products(self):
@@ -59,8 +60,56 @@ class VendingMachine:
         self.order.add_item(product,quantity)
     def view_cart(self):
         self.order.view_order()  
+    
     def clear_cart(self):
-        self.order.clear_cart()    
+        self.order.clear_cart()
+
+    def save_order(self):
+        if self.order.items:
+            self.order.save_order() 
+#process order                 
+    def initialize_process_order(self):
+        if self.order.items:
+            self._process_order=ProcessOrder(self.order)
+        else:
+            print("cart is empty")    
+    def listen_to_order_status(self):
+        if self._process_order:
+            self._process_order.listen_to_order_status()  
+    
+    def get_order_status(self):
+        if self.order.status==10:
+            print("order scanned")
+        elif self.order.status==20:
+            print("Succeses \ndispencing items.....")
+            #hardware function here.......
+            #self._process_order.update_stock()
+            self._process_order.close_timer()
+            self._process_order.close_stream()
+        elif self.order.status==30:
+            print("Unsucceses")
+            self._process_order.close_timer()
+            self._process_order.close_stream()
+        elif self.order.status==100:
+            print("Connection timed out") 
+        return self.order.status
+    def update_stock(self):
+        self._process_order.update_stock()
+    def clear_cart(self):
+        self.order.clear_cart()   
+    def clear_process_order(self):
+        self._process_order=None     
+
+
+
+
+
+
+    
+
+    
+
+
 
     
     #returns a list of all products information
@@ -231,7 +280,7 @@ class Order:
             'timestamp':datetime.datetime.now().timestamp()
         }
         self.order_id=db.generate_key()
-        db.child('machine-orders').child(self.machine_id).child(self.order_id).set(machine_order)    
+        db.child('machine-orders').child(self.machine_id).child(self.order_id).set(machine_order)        
    
     def clear_cart(self):
         self.items = []  # List to store the items in the order
@@ -246,20 +295,41 @@ class ProcessOrder:
     def __init__(self,order):
         self.order=order
         self.order_status_stream = None
+        self.timer=None
    
     def order_status_stream_handler(self,message):
         if message["event"] == "put":
             order_status = message["data"]
-            print("Order status updated:", order_status)
-            self.order.status=order_status
+            self.order.status=order_status            
+            print("Order status updated:", order_status,self.order.status)
 
+    def _connection_time_out(self):
+        if self.order.status==0 or self.order.status==100:
+            db.child('machine-orders').child(self.order.machine_id).child(self.order.order_id).child('status').set(100)
+            self.order.status=100
+            self.close_stream()
+    
 
-    def process_order(self):
+    def listen_to_order_status(self):
         self.order_status_stream = db.child("machine-orders").child(self.order.machine_id).child(self.order.order_id).child("status").stream(self.order_status_stream_handler)
-
+        self.timer=threading.Timer(30,self._connection_time_out)
+        self.timer.start()
+                            
     def close_stream(self):
         if self.order_status_stream:
             self.order_status_stream.close()
+    def close_timer(self):
+        if self.timer:
+            self.timer.cancel()        
+    
+    def update_stock(self):
+        if self.order.status==20:
+            for item in self.order.items:
+                product=item['product']
+                quantity=item['quantity'] 
+                product.set_product_amount(product.amount-quantity)        
+
+            
 
 
 
@@ -268,25 +338,34 @@ class ProcessOrder:
 
 
 machine=initialize_machine("machine@gmail.com","123456789")
+while True:
+    #show items and take user input
+    products=machine.get_products()
+    for product in products:
+        print(vars(product))
+    picked_item=input("item: ")
+    item_amount=input("amount: ")
+    #make a cart
+    machine.add_item_to_cart(products[int(picked_item)] , int(item_amount))
+    machine.view_cart()
+    machine.save_order()
+    #proces payment
+    machine.initialize_process_order()
+    machine.listen_to_order_status()
+    i=True
+    while i==True:
+        status=machine.get_order_status()
+        if status == 20:
+            machine.update_stock()
+            machine.clear_cart()
+            machine.clear_process_order()
+            i=False
+        elif status in [30,100]:
+            machine.clear_cart()
+            machine.clear_process_order()
+            i=False
 
-products=machine.get_products()
 
-for product in products:
-    print(vars(product))
-
-picked_item=input("item: ")
-
-item_amount=input("amount: ")
-
-machine.add_item_to_cart(products[int(picked_item)] , int(item_amount))
-
-machine.view_cart()
-
-machine.order.save_order()
-
-payment=ProcessOrder(machine.order)
-
-payment.listen_for_order()
 
 
 
