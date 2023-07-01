@@ -81,7 +81,8 @@ class VendingMachine:
         if self.order.status==10:
             print("order scanned")
         elif self.order.status==20:
-            print("Succeses \ndispencing items.....")
+            print("Succeses")
+            print("dispencing items.....")
             #hardware function here.......
             #self._process_order.update_stock()
             self._process_order.close_timer()
@@ -201,7 +202,7 @@ class Product:
         product=db.child('machine-products').child(self.machine_id).child(self.product_id).get().val()
         return product
     def set_product_amount(self,newAmount):
-        if newAmount not in range(1,11):
+        if newAmount not in range(1,30):
            print("incorrect amount")
            return None
         try:
@@ -304,7 +305,7 @@ class ProcessOrder:
             print("Order status updated:", order_status,self.order.status)
 
     def _connection_time_out(self):
-        if self.order.status==0 or self.order.status==100:
+        if self.order.status==0 or self.order.status==10:
             db.child('machine-orders').child(self.order.machine_id).child(self.order.order_id).child('status').set(100)
             self.order.status=100
             self.close_stream()
@@ -355,14 +356,17 @@ while True:
     i=True
     while i==True:
         status=machine.get_order_status()
+        time.sleep(0.1)
         if status == 20:
             machine.update_stock()
             machine.clear_cart()
             machine.clear_process_order()
+            time.sleep(3)
             i=False
         elif status in [30,100]:
             machine.clear_cart()
             machine.clear_process_order()
+            time.sleep(3)
             i=False
 
 
