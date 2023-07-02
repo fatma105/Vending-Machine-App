@@ -1,7 +1,7 @@
 import pyrebase
-
+import datetime
 import time
-
+import threading
 
 config={
    "apiKey": "AIzaSyBMjuS7yAjgHWUY-VxX7y6TSYDzu6C2E3c",
@@ -25,7 +25,6 @@ storage = firebase.storage()
 def initialize_machine(email, password):
     try:
         machine = auth.sign_in_with_email_and_password(email, password)
-        #db.child('machines').child(machine['localId']).child('state').set(1)
         return VendingMachine(machine)
     except Exception as e:
 
@@ -42,13 +41,81 @@ class VendingMachine:
             self.machine=Machine(self.machine_id)
         except:
             raise ValueError("Error intializing machine") 
+        self.order=Order(machine_id=self.machine_id)
+        self._process_order=None
          
-                  
+
+    def get_products(self):
+        
+       return self.machine.get_products()
+
+    
     def get_product_by_slot(self,slot):
         for product in self.machine.get_products():
-            if product.postion==slot:
+            if product.position==slot:
                 return product 
-        return None    
+        return None  
+#order logic
+    def add_item_to_cart(self, product, quantity=1):
+        self.order.add_item(product,quantity)
+    def view_cart(self):
+        self.order.view_order()  
+    
+    def clear_cart(self):
+        self.order.clear_cart()
+
+    def save_order(self):
+        if self.order.items:
+            self.order.save_order() 
+#process order                 
+    def initialize_process_order(self):
+        if self.order.items:
+            self._process_order=ProcessOrder(self.order)
+        else:
+            print("cart is empty")    
+    def listen_to_order_status(self):
+        if self._process_order:
+            self._process_order.listen_to_order_status()  
+    
+    def get_order_qrinfo(self):
+        if self.order.order_id and self._process_order:
+            return f"{self.order.machine_id}/{self.order.order_id}"
+        
+    def get_order_status(self):
+        if self.order.status==10:
+            print("order scanned")
+        elif self.order.status==20:
+            print("Succeses")
+            print("dispencing items.....")
+            #hardware function here.......
+            #self._process_order.update_stock()
+            self._process_order.close_timer()
+            self._process_order.close_stream()
+        elif self.order.status==30:
+            print("Unsucceses")
+            self._process_order.close_timer()
+            self._process_order.close_stream()
+        elif self.order.status==100:
+            print("Connection timed out") 
+        return self.order.status
+    def update_stock(self):
+        self._process_order.update_stock()
+    def clear_cart(self):
+        self.order.clear_cart()   
+    def clear_process_order(self):
+        self._process_order=None     
+
+
+
+
+
+
+    
+
+    
+
+
+
     
     #returns a list of all products information
     #show products
@@ -116,7 +183,7 @@ class Machine:
             for product in productref:
                 products.append(Product(self.machine_id,product.key()))
                 
-            products.sort(key=lambda p: p.postion)  
+            products.sort(key=lambda p: p.position)  
             return products    
      
 #move to machine class
@@ -131,15 +198,15 @@ class Product:
         self.product_id=product_id
         product=self.get_product_data()
         self.name=product['name']
-        self.imgUrl=product['img']
+        self.imgUrl=product['image']
         self.price=product['price']
         self.amount=product['amount'] 
-        self.postion=product['postion']
+        self.position=product['position'] 
     def get_product_data(self):
         product=db.child('machine-products').child(self.machine_id).child(self.product_id).get().val()
         return product
     def set_product_amount(self,newAmount):
-        if newAmount not in range(1,11):
+        if newAmount not in range(1,30):
            print("incorrect amount")
            return None
         try:
@@ -173,64 +240,100 @@ class Product:
     
 #order class
 class Order:
-    def __init__(self) -> None:
-        pass
+    def __init__(self,machine_id):
+        self.items = []  # List to store the items in the order
+        self.total=0
+        self.status=0
+        self.machine_id=machine_id
+        self.order_id=None
+
+    def add_item(self, product, quantity=1):
+        if product.amount<quantity:
+            raise ValueError("Not enough inventory")
+        
+        self.items.append({
+            'product': product,
+            'quantity': quantity,
+            'subtotal':product.price*quantity
+        })
+        self.total+=product.price*quantity
+
+        print(f"{quantity} {product.name}(s) added to the order.")
+    def view_order(self):
+        if self.items:
+            print("Items in the order:")
+            for item in self.items:
+                
+                print(f"{item['product'].name}: {item['quantity']} x ${item['product'].price} = ${item['subtotal']}")
+            print(f"Total: ${self.total}")
+        else:
+            print("The order is empty.")
+
+    def save_order(self):
+        items=[]
+        for item in self.items:
+            product=item['product']
+            quantity=item['quantity']
+            subtotal=item['subtotal']
+            items={
+               product.product_id:{'name':product.name,'price':product.price,'quantity':quantity,'subtotal':subtotal }
+            }
+        machine_order={
+            'order':items,
+            'status':0,
+            'total':self.total,
+            'timestamp':datetime.datetime.now().timestamp()
+        }
+        self.order_id=db.generate_key()
+        db.child('machine-orders').child(self.machine_id).child(self.order_id).set(machine_order)        
+   
+    def clear_cart(self):
+        self.items = []  # List to store the items in the order
+        self.total=0
+        self.status=0
+        self.order_id=None
 
 
 
 #Payment
+class ProcessOrder:
+    def __init__(self,order):
+        self.order=order
+        self.order_status_stream = None
+        self.timer=None
+   
+    def order_status_stream_handler(self,message):
+        if message["event"] == "put":
+            order_status = message["data"]
+            self.order.status=order_status            
+            print("Order status updated:", order_status,self.order.status)
 
+    def _connection_time_out(self):
+        if self.order.status==0 or self.order.status==10:
+            db.child('machine-orders').child(self.order.machine_id).child(self.order.order_id).child('status').set(100)
+            self.order.status=100
+            self.close_stream()
+    
 
+    def listen_to_order_status(self):
+        self.order_status_stream = db.child("machine-orders").child(self.order.machine_id).child(self.order.order_id).child("status").stream(self.order_status_stream_handler)
+        self.timer=threading.Timer(30,self._connection_time_out)
+        self.timer.start()
+                            
+    def close_stream(self):
+        if self.order_status_stream:
+            self.order_status_stream.close()
+    def close_timer(self):
+        if self.timer:
+            self.timer.cancel()        
+    
+    def update_stock(self):
+        if self.order.status==20:
+            for item in self.order.items:
+                product=item['product']
+                quantity=item['quantity'] 
+                product.set_product_amount(product.amount-quantity)        
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-signin_info=auth.sign_in_with_email_and_password("machine@mail.com",123456)
-
-machine=initialize_machine("machine@mail.com","123456")
-
-
-
-
-
-#tests
-
-# # Print the name and number of slots of machine_1
-# print(machine_1.name)
-# print(machine_1.slots)
-
-# # Set the state of machine_1 to available and print the state
-# machine_1.set_available()
-# print(machine_1.get_state())
-
-# # Set the state of machine_1 to unavailable and print the state
-# machine_1.set_unavailable()
-# print(machine_1.get_state())
-
-# # Get the list of products of machine_1 and print their names and positions
-# products = machine_1.get_products()
-# for product in products:
-#     print(vars(product))
-
-# # Get the product at slot 1 of machine_1 and print its name
-# product_1 = machine_1.get_product_by_slot(1)
-# product_1.set_product_price(10)
-# product_1.set_product_amount(7)
-# print(vars(product_1))
-
-
-
+            
 
 
