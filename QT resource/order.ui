@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>480</height>
+    <width>466</width>
+    <height>512</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -58,8 +58,8 @@ QLCDNumber {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>776</width>
-         <height>431</height>
+         <width>442</width>
+         <height>463</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -186,6 +186,43 @@ background-color: rgb(239, 239, 239);</string>
                </widget>
               </item>
              </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_5">
+              <property name="text">
+               <string>Submit</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </item>

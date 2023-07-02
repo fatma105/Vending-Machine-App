@@ -7,48 +7,47 @@ from PyQt5.uic import loadUiType
 import os
 from os import path
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
+import cv2
+import qrcode
+# from models import VendingMachine
+# from models import initialize_machine
+# machine=initialize_machine("machine@mail.com","123456")
 FORRM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "SVM.ui"))
-
-######intiate ui file############
-class FirstClass(QMainWindow,FORRM_CLASS):
+class introPage(QMainWindow,FORRM_CLASS):
     def __init__(self):
         super().__init__()
         QMainWindow.__init__(self)
         self.setupUi(self)
+        self.setWindowTitle('Smart Vending Machine')
+        self.centralwidget= QGridLayout()
+        self.setLayout(self.centralwidget)
         # # Get the size of the user's screen
         # screen_size = QDesktopWidget().screenGeometry()
         # # Set the size of the window to fit the screen
         # self.setGeometry(0, 0, screen_size.width(), screen_size.height())
         self.pushButton.clicked.connect(self.switch)
-        self.Handle_UI()
-
-    def Handle_UI(self):
-        self.setWindowTitle('Smart Vending Machine')
-
+        # self.VendingMachine
     def switch(self):
         stacked_widget.setCurrentIndex(1)
 
 FORM_CLASS1, _ = loadUiType(path.join(path.dirname(__file__), "fixedpage.ui"))
 class ProductClass(QMainWindow,FORM_CLASS1):
-    def __init__(self, parent=None):
+    def __init__(self):
         super().__init__()
         QMainWindow.__init__(self)
-
         self.setupUi(self)
-
-        self.product_list = []  # create an empty list to store the product information
         self.setWindowTitle('Page of Products')
         self.Handle_product1()
         self.Handle_product2()
         self.Handle_product3()
         self.Handle_product4()
-        # Get the size of the user's screen
-        screen_size = QDesktopWidget().screenGeometry()
-        # Set the size of the window to fit the screen
-        self.setGeometry(0, 0, screen_size.width(), screen_size.height())
+        # # Get the size of the user's screen
+        # screen_size = QDesktopWidget().screenGeometry()
+        # # Set the size of the window to fit the screen
+        # self.setGeometry(0, 0, screen_size.width(), screen_size.height())
         self.pushButton_5.clicked.connect(self.switch)
         self.pushButton_6.clicked.connect(self.switchOrder)
+        # self.VendingMachine=machine
     def Handle_product1(self):
                 #ProductImage
                 image_path=path.join(path.dirname(__file__),"./img/download (1).jpg")
@@ -62,7 +61,8 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 # Set the alignment of the label to center
                 self.label.setAlignment(Qt.AlignCenter)
                 # ProductName
-                ProductName1="chipsy"
+                # product1=VendingMachine.get_product_by_slot(3)
+                ProductName1="product1.name"
                 self.pushButton_49.setText(ProductName1)
                 #price
                 ProductPrice2 = "Price:07$"
@@ -91,8 +91,8 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 # Set the pixmap as the label's image
                 self.label_2.setPixmap(pixmap)
 
-                # Resize the label to fit the image
-                # self.label_2.resize(100,80 )
+                # # Resize the label to fit the image
+                # self.label_2.resize(100,100 )
                 # Set the alignment of the label to center
                 self.label_2.setAlignment(Qt.AlignCenter)
 
@@ -126,8 +126,8 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 # Set the pixmap as the label's image
                 self.label_3.setPixmap(pixmap)
 
-                # Resize the label to fit the image
-                # self.label_3.resize(100,80 )
+                # # Resize the label to fit the image
+                # self.label_3.resize(100,100 )
                 # Set the alignment of the label to center
                 self.label_3.setAlignment(Qt.AlignCenter)
                 # ProductName
@@ -160,8 +160,8 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 # Set the pixmap as the label's image
                 self.label_4.setPixmap(pixmap)
 
-                # Resize the label to fit the image
-                # self.label_4.resize(100,80 )
+                # # Resize the label to fit the image
+                # self.label_4.resize(100,100 )
                 # Set the alignment of the label to center
                 self.label_4.setAlignment(Qt.AlignCenter)
                 # ProductName
@@ -194,15 +194,14 @@ class ProductClass(QMainWindow,FORM_CLASS1):
         stacked_widget.setCurrentIndex(2)
 
 FORM_CLASS2, _ = loadUiType(path.join(path.dirname(__file__), "order.ui"))
-
 class CheckoutWindow(QMainWindow,FORM_CLASS2):
     def __init__(self,parent=None):
         super().__init__(parent)
         QMainWindow.__init__(self)
         self.setupUi(self)
         self.Handel_order()
-
         self.pushButton_back.clicked.connect(self.switchOrder)
+        self.pushButton_5.clicked.connect(self.switchQRcode)
     def Handel_order(self):
         self.setWindowTitle('Checkout')
         #Date
@@ -217,15 +216,38 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
         self.pushButton_4.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
     def switchOrder(self):
         stacked_widget.setCurrentIndex(1)
-
-app = QApplication(sys.argv)
-stacked_widget = QStackedWidget()
-first_class = FirstClass()
-second_class = ProductClass()
-thrid_class = CheckoutWindow()
-stacked_widget.addWidget(first_class)
-stacked_widget.addWidget(second_class)
-stacked_widget.addWidget(thrid_class)
-stacked_widget.show()
-sys.exit(app.exec_())
+    def switchQRcode(self):
+        stacked_widget.setCurrentIndex(3)
+FORRM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "qr code.ui"))
+class qrCodePage(QMainWindow,FORRM_CLASS):
+    def __init__(self):
+        super().__init__()
+        QMainWindow.__init__(self)
+        self.setupUi(self)
+        self.generateCode()
+    def generateCode(self):
+        qr = qrcode.QRCode(version=1, box_size=10, border=4)
+        qr.add_data('https://www.google.com.eg/?hl=ar')
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        img.save('qrcode.png')
+        pixmap = QPixmap('qrcode.png')
+        self.label_2.setAlignment(Qt.AlignCenter)
+        self.label_2.setPixmap(pixmap)
+        self.pushButton.clicked.connect(self.switchOrder)
+    def switchOrder(self):
+        stacked_widget.setCurrentIndex(2)
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    stacked_widget = QStackedWidget()
+    first_class = introPage()
+    second_class = ProductClass()
+    thrid_class = CheckoutWindow()
+    fourth_class=qrCodePage()
+    stacked_widget.addWidget(first_class)
+    stacked_widget.addWidget(second_class)
+    stacked_widget.addWidget(thrid_class)
+    stacked_widget.addWidget(fourth_class)
+    stacked_widget.show()
+    sys.exit(app.exec_())
 
