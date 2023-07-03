@@ -11,7 +11,12 @@ import requests
 # from models import VendingMachine
 # from models import initialize_machine
 # machine=initialize_machine("machine@mail.com","123456")
-machine=1
+from models import *
+
+
+machine=None
+machine=initialize_machine("machine@gmail.com","123456789")
+
 FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "login.ui"))
 
 class Register(QMainWindow, FORM_CLASS):
@@ -20,6 +25,7 @@ class Register(QMainWindow, FORM_CLASS):
         self.setupUi(self)
         self.Handle_register()
         self.Handle_signup()
+        
 
     def Handle_register(self):
         email = self.lineEdit_2.text()
@@ -52,11 +58,15 @@ class introPage(QMainWindow,FORRM_CLASS):
             stacked_widget.setCurrentIndex(2)
 FORM_CLASS1, _ = loadUiType(path.join(path.dirname(__file__), "fixedpage.ui"))
 class ProductClass(QMainWindow,FORM_CLASS1):
-    def __init__(self):
+    def __init__(self,machine):
         super().__init__()
         QMainWindow.__init__(self)
         self.setupUi(self)
         self.setWindowTitle('Page of Products')
+
+        self.machine=machine
+        self.products=self.machine.get_products()
+
         self.Handle_product1()
         self.Handle_product2()
         self.Handle_product3()
@@ -67,15 +77,15 @@ class ProductClass(QMainWindow,FORM_CLASS1):
         # self.setGeometry(0, 0, screen_size.width(), screen_size.height())
         self.pushButton_5.clicked.connect(self.switch)
         self.pushButton_6.clicked.connect(self.switchOrder)
-        # self.VendingMachine=machine
+        
     def Handle_product1(self):
                 #ProductImage
                 # image_path=path.join(path.dirname(__file__),"./img/download (1).jpg")
                 # pixmap = QPixmap(image_path)
                 # # Set the pixmap as the label's image
                 # self.label.setPixmap(pixmap)
-
-                url = "https://i.pinimg.com/originals/54/18/df/5418df8a49e7eb6a048e80f7abcf61d8.png"
+                product1=self.products[0]
+                url = product1.imgUrl
                 response = requests.get(url)
                 pixmap = QPixmap()
                 pixmap.loadFromData(response.content)
@@ -86,10 +96,10 @@ class ProductClass(QMainWindow,FORM_CLASS1):
 
                 # ProductName
                 # product1=VendingMachine.get_product_by_slot(3)
-                ProductName1="product1.name"
+                ProductName1=product1.name
                 self.pushButton_49.setText(ProductName1)
                 #price
-                ProductPrice2 = "Price:07$"
+                ProductPrice2 = f"Price:{product1.price}EGP"
                 self.pushButton_50.setText(ProductPrice2)
 
                 #LCD
@@ -100,7 +110,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 self.pushButton_7.clicked.connect(self.decreaseNumber)
     def increaseNumber(self):
         num = int(self.lcdNumber_2.value())
-        if num < 100:
+        if num < self.products[0].amount:
             num += 1
             self.lcdNumber_2.display(num)
     def decreaseNumber(self):
@@ -115,7 +125,8 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 # # Set the pixmap as the label's image
                 # self.label_2.setPixmap(pixmap)
                 # self.label_2.setAlignment(Qt.AlignCenter)
-                url = "https://i.pinimg.com/originals/54/18/df/5418df8a49e7eb6a048e80f7abcf61d8.png"
+                product2=self.products[1]
+                url =product2.imgUrl
                 response = requests.get(url)
                 pixmap = QPixmap()
                 pixmap.loadFromData(response.content)
@@ -125,11 +136,11 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 self.label_2.setAlignment(Qt.AlignCenter)
 
                 # ProductName
-                ProductName2="Beak"
+                ProductName2=product2.name
                 self.pushButton_51.setText(ProductName2)
                 self.pushButton_51.setEnabled(False)
                 #price
-                ProductPrice2 = "Price:10$"
+                ProductPrice2 = f"Price:{product2.price}EGP"
                 self.pushButton_52.setText(ProductPrice2)
                 #LCD
                 self.lcdNumber_3.setSegmentStyle(QLCDNumber.Flat)
@@ -139,7 +150,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 self.pushButton_8.clicked.connect(self.decreaseNumber2)
     def increaseNumber2(self):
         num = int(self.lcdNumber_3.value())
-        if num < 100:
+        if num < self.products[1].amount:
             num += 1
             self.lcdNumber_3.display(num)
     def decreaseNumber2(self):
@@ -303,7 +314,7 @@ if __name__ == '__main__':
     stacked_widget = QStackedWidget()
     first_class =Register()
     second_class = introPage()
-    thrid_class = ProductClass()
+    thrid_class = ProductClass(machine=machine)
     fourth_class= CheckoutWindow()
     fifth_class=qrCodePage()
     if machine:

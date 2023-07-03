@@ -6,6 +6,7 @@ machine=initialize_machine("machine@gmail.com","123456789")
 while True:
     #show items and take user input
     products=machine.get_products()
+ 
     for product in products:
         print(vars(product))
     picked_item=input("item: ")
