@@ -1,17 +1,66 @@
-from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import QStackedWidget
 from PyQt5.uic import loadUiType
-import os
 from os import path
 import sys
-import cv2
 import qrcode
+import requests
+# from machine.models import *
 # from models import VendingMachine
 # from models import initialize_machine
 # machine=initialize_machine("machine@mail.com","123456")
+machine=None
+
+# FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "login.ui"))
+# class Register(QMainWindow, FORM_CLASS):
+#     def __init__(self):
+#         QMainWindow.__init__(self)
+#         self.setupUi(self)
+#         self.Handle_register()
+#         self.Handle_signup()
+#
+#     def Handle_register(self):
+#         email=self.lineEdit_2.text()
+#         print(email)
+#         password =self.lineEdit_3.text()
+#         print(password)
+#     #
+#     # def Handle_signup(self):
+#     #     if self.Handle_register.email != "" or self.Handle_register.password != "":
+#     #         self.pushButton_3.clicked.connect(self.Handle_register)
+#     #     self.pushButton_3.clicked.connect(self.switchLogin)
+#
+#     def Handle_signup(self):
+#         registration_form = Register()  # create an instance of the RegistrationForm class
+#         if registration_form.email != "" or registration_form.password != "":
+#             self.pushButton_3.clicked.connect(registration_form.Handle_register)
+#         self.pushButton_3.clicked.connect(self.switchLogin)
+#     def switchLogin(self):
+#         stacked_widget.setCurrentIndex(1)
+FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "login.ui"))
+
+class Register(QMainWindow, FORM_CLASS):
+    def __init__(self):
+        QMainWindow.__init__(self)
+        self.setupUi(self)
+        self.Handle_register()
+        self.Handle_signup()
+
+    def Handle_register(self):
+        email = self.lineEdit_2.text()
+        print(email)
+        password = self.lineEdit_3.text()
+        print(password)
+
+    def Handle_signup(self):
+        # if self.lineEdit_2.text() != "" or self.lineEdit_3.text() != "":
+        self.pushButton_3.clicked.connect(self.Handle_register)
+        self.pushButton_3.clicked.connect(self.switchLogin)
+
+    def switchLogin(self):
+        stacked_widget.setCurrentIndex(1)
 FORRM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "SVM.ui"))
 class introPage(QMainWindow,FORRM_CLASS):
     def __init__(self):
@@ -21,15 +70,13 @@ class introPage(QMainWindow,FORRM_CLASS):
         self.setWindowTitle('Smart Vending Machine')
         self.centralwidget= QGridLayout()
         self.setLayout(self.centralwidget)
-        # # Get the size of the user's screen
-        # screen_size = QDesktopWidget().screenGeometry()
-        # # Set the size of the window to fit the screen
-        # self.setGeometry(0, 0, screen_size.width(), screen_size.height())
         self.pushButton.clicked.connect(self.switch)
-        # self.VendingMachine
+        # self.VendingMachine=machine
     def switch(self):
-        stacked_widget.setCurrentIndex(1)
-
+        if machine is not None and machine <= 1:
+            stacked_widget.setCurrentIndex(1)
+        else:
+            stacked_widget.setCurrentIndex(2)
 FORM_CLASS1, _ = loadUiType(path.join(path.dirname(__file__), "fixedpage.ui"))
 class ProductClass(QMainWindow,FORM_CLASS1):
     def __init__(self):
@@ -50,16 +97,20 @@ class ProductClass(QMainWindow,FORM_CLASS1):
         # self.VendingMachine=machine
     def Handle_product1(self):
                 #ProductImage
-                image_path=path.join(path.dirname(__file__),"./img/download (1).jpg")
-                pixmap = QPixmap(image_path)
-                # Set the pixmap as the label's image
-                self.label.setPixmap(pixmap)
+                # image_path=path.join(path.dirname(__file__),"./img/download (1).jpg")
+                # pixmap = QPixmap(image_path)
+                # # Set the pixmap as the label's image
+                # self.label.setPixmap(pixmap)
 
-                # Resize the label to fit the image
-                # self.label.resize(100, 100)
-
+                url = "https://i.pinimg.com/originals/54/18/df/5418df8a49e7eb6a048e80f7abcf61d8.png"
+                response = requests.get(url)
+                pixmap = QPixmap()
+                pixmap.loadFromData(response.content)
+                scaled_pixmap = pixmap.scaled(200, 200)
+                self.label.setPixmap(scaled_pixmap)
                 # Set the alignment of the label to center
                 self.label.setAlignment(Qt.AlignCenter)
+
                 # ProductName
                 # product1=VendingMachine.get_product_by_slot(3)
                 ProductName1="product1.name"
@@ -86,13 +137,17 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             self.lcdNumber_2.display(num)
     def Handle_product2(self):
                 #ProductImage
-                image_path=path.join(path.dirname(__file__),"./img/download (2).jpg")
-                pixmap = QPixmap(image_path)
-                # Set the pixmap as the label's image
-                self.label_2.setPixmap(pixmap)
-
-                # # Resize the label to fit the image
-                # self.label_2.resize(100,100 )
+                # image_path=path.join(path.dirname(__file__),"./img/download (2).jpg")
+                # pixmap = QPixmap(image_path)
+                # # Set the pixmap as the label's image
+                # self.label_2.setPixmap(pixmap)
+                # self.label_2.setAlignment(Qt.AlignCenter)
+                url = "https://i.pinimg.com/originals/54/18/df/5418df8a49e7eb6a048e80f7abcf61d8.png"
+                response = requests.get(url)
+                pixmap = QPixmap()
+                pixmap.loadFromData(response.content)
+                scaled_pixmap = pixmap.scaled(200, 200)
+                self.label_2.setPixmap(scaled_pixmap)
                 # Set the alignment of the label to center
                 self.label_2.setAlignment(Qt.AlignCenter)
 
@@ -121,15 +176,25 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             self.lcdNumber_3.display(num)
     def Handle_product3(self):
                 #ProductImage
-                image_path=path.join(path.dirname(__file__),"./img/download (3).jpg")
-                pixmap = QPixmap(image_path)
-                # Set the pixmap as the label's image
-                self.label_3.setPixmap(pixmap)
+                # image_path=path.join(path.dirname(__file__),"./img/download (3).jpg")
+                # pixmap = QPixmap(image_path)
+                # # Set the pixmap as the label's image
+                # self.label_3.setPixmap(pixmap)
+                #
+                # # # Resize the label to fit the image
+                # # self.label_3.resize(100,100 )
+                # # Set the alignment of the label to center
+                # self.label_3.setAlignment(Qt.AlignCenter)
 
-                # # Resize the label to fit the image
-                # self.label_3.resize(100,100 )
+                url = "https://i.pinimg.com/originals/54/18/df/5418df8a49e7eb6a048e80f7abcf61d8.png"
+                response = requests.get(url)
+                pixmap = QPixmap()
+                pixmap.loadFromData(response.content)
+                scaled_pixmap = pixmap.scaled(200, 200)
+                self.label_3.setPixmap(scaled_pixmap)
                 # Set the alignment of the label to center
                 self.label_3.setAlignment(Qt.AlignCenter)
+
                 # ProductName
                 ProductName3="Lambada"
                 self.pushButton_53.setText(ProductName3)
@@ -155,13 +220,21 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             self.lcdNumber_4.display(num)
     def Handle_product4(self):
                 #ProductImage
-                image_path=path.join(path.dirname(__file__),"./img/download (4).jpg")
-                pixmap = QPixmap(image_path)
-                # Set the pixmap as the label's image
-                self.label_4.setPixmap(pixmap)
-
-                # # Resize the label to fit the image
-                # self.label_4.resize(100,100 )
+                # image_path=path.join(path.dirname(__file__),"./img/download (4).jpg")
+                # pixmap = QPixmap(image_path)
+                # # Set the pixmap as the label's image
+                # self.label_4.setPixmap(pixmap)
+                #
+                # # # Resize the label to fit the image
+                # # self.label_4.resize(100,100 )
+                # # Set the alignment of the label to center
+                # self.label_4.setAlignment(Qt.AlignCenter)
+                url = "https://i.pinimg.com/originals/54/18/df/5418df8a49e7eb6a048e80f7abcf61d8.png"
+                response = requests.get(url)
+                pixmap = QPixmap()
+                pixmap.loadFromData(response.content)
+                scaled_pixmap = pixmap.scaled(200, 200)
+                self.label_4.setPixmap(scaled_pixmap)
                 # Set the alignment of the label to center
                 self.label_4.setAlignment(Qt.AlignCenter)
                 # ProductName
@@ -189,9 +262,15 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             num -= 1
             self.lcdNumber_5.display(num)
     def switch(self):
-        stacked_widget.setCurrentIndex(0)
+        if machine is not None and machine <= 1:
+            stacked_widget.setCurrentIndex(0)
+        else:
+            stacked_widget.setCurrentIndex(1)
     def switchOrder(self):
-        stacked_widget.setCurrentIndex(2)
+        if machine is not None and machine <= 1:
+            stacked_widget.setCurrentIndex(2)
+        else:
+            stacked_widget.setCurrentIndex(3)
 
 FORM_CLASS2, _ = loadUiType(path.join(path.dirname(__file__), "order.ui"))
 class CheckoutWindow(QMainWindow,FORM_CLASS2):
@@ -215,9 +294,15 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
         self.pushButton_4.setText(total_price)
         self.pushButton_4.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
     def switchOrder(self):
-        stacked_widget.setCurrentIndex(1)
+        if machine is not None and machine <= 1:
+            stacked_widget.setCurrentIndex(1)
+        else:
+            stacked_widget.setCurrentIndex(2)
     def switchQRcode(self):
-        stacked_widget.setCurrentIndex(3)
+        if machine is not None and machine <= 1:
+            stacked_widget.setCurrentIndex(3)
+        else:
+            stacked_widget.setCurrentIndex(4)
 FORRM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "qr code.ui"))
 class qrCodePage(QMainWindow,FORRM_CLASS):
     def __init__(self):
@@ -236,18 +321,29 @@ class qrCodePage(QMainWindow,FORRM_CLASS):
         self.label_2.setPixmap(pixmap)
         self.pushButton.clicked.connect(self.switchOrder)
     def switchOrder(self):
-        stacked_widget.setCurrentIndex(2)
+        if machine is not None and machine <= 1:
+            stacked_widget.setCurrentIndex(2)
+        else:
+            stacked_widget.setCurrentIndex(3)
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     stacked_widget = QStackedWidget()
-    first_class = introPage()
-    second_class = ProductClass()
-    thrid_class = CheckoutWindow()
-    fourth_class=qrCodePage()
-    stacked_widget.addWidget(first_class)
-    stacked_widget.addWidget(second_class)
-    stacked_widget.addWidget(thrid_class)
-    stacked_widget.addWidget(fourth_class)
+    first_class =Register()
+    second_class = introPage()
+    thrid_class = ProductClass()
+    fourth_class= CheckoutWindow()
+    fifth_class=qrCodePage()
+    if machine is not None and machine <= 1:
+        stacked_widget.addWidget(second_class)
+        stacked_widget.addWidget(thrid_class)
+        stacked_widget.addWidget(fourth_class)
+        stacked_widget.addWidget(fifth_class)
+    else:
+        stacked_widget.addWidget(first_class)
+        stacked_widget.addWidget(second_class)
+        stacked_widget.addWidget(thrid_class)
+        stacked_widget.addWidget(fourth_class)
+        stacked_widget.addWidget(fifth_class)
     stacked_widget.show()
     sys.exit(app.exec_())
 
