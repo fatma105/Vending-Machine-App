@@ -11,34 +11,7 @@ import requests
 # from models import VendingMachine
 # from models import initialize_machine
 # machine=initialize_machine("machine@mail.com","123456")
-machine=None
-
-# FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "login.ui"))
-# class Register(QMainWindow, FORM_CLASS):
-#     def __init__(self):
-#         QMainWindow.__init__(self)
-#         self.setupUi(self)
-#         self.Handle_register()
-#         self.Handle_signup()
-#
-#     def Handle_register(self):
-#         email=self.lineEdit_2.text()
-#         print(email)
-#         password =self.lineEdit_3.text()
-#         print(password)
-#     #
-#     # def Handle_signup(self):
-#     #     if self.Handle_register.email != "" or self.Handle_register.password != "":
-#     #         self.pushButton_3.clicked.connect(self.Handle_register)
-#     #     self.pushButton_3.clicked.connect(self.switchLogin)
-#
-#     def Handle_signup(self):
-#         registration_form = Register()  # create an instance of the RegistrationForm class
-#         if registration_form.email != "" or registration_form.password != "":
-#             self.pushButton_3.clicked.connect(registration_form.Handle_register)
-#         self.pushButton_3.clicked.connect(self.switchLogin)
-#     def switchLogin(self):
-#         stacked_widget.setCurrentIndex(1)
+machine=1
 FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "login.ui"))
 
 class Register(QMainWindow, FORM_CLASS):
@@ -73,7 +46,7 @@ class introPage(QMainWindow,FORRM_CLASS):
         self.pushButton.clicked.connect(self.switch)
         # self.VendingMachine=machine
     def switch(self):
-        if machine is not None and machine <= 1:
+        if machine:
             stacked_widget.setCurrentIndex(1)
         else:
             stacked_widget.setCurrentIndex(2)
@@ -262,12 +235,12 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             num -= 1
             self.lcdNumber_5.display(num)
     def switch(self):
-        if machine is not None and machine <= 1:
+        if machine:
             stacked_widget.setCurrentIndex(0)
         else:
             stacked_widget.setCurrentIndex(1)
     def switchOrder(self):
-        if machine is not None and machine <= 1:
+        if machine:
             stacked_widget.setCurrentIndex(2)
         else:
             stacked_widget.setCurrentIndex(3)
@@ -294,12 +267,12 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
         self.pushButton_4.setText(total_price)
         self.pushButton_4.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
     def switchOrder(self):
-        if machine is not None and machine <= 1:
+        if machine:
             stacked_widget.setCurrentIndex(1)
         else:
             stacked_widget.setCurrentIndex(2)
     def switchQRcode(self):
-        if machine is not None and machine <= 1:
+        if machine:
             stacked_widget.setCurrentIndex(3)
         else:
             stacked_widget.setCurrentIndex(4)
@@ -321,7 +294,7 @@ class qrCodePage(QMainWindow,FORRM_CLASS):
         self.label_2.setPixmap(pixmap)
         self.pushButton.clicked.connect(self.switchOrder)
     def switchOrder(self):
-        if machine is not None and machine <= 1:
+        if machine:
             stacked_widget.setCurrentIndex(2)
         else:
             stacked_widget.setCurrentIndex(3)
@@ -333,7 +306,7 @@ if __name__ == '__main__':
     thrid_class = ProductClass()
     fourth_class= CheckoutWindow()
     fifth_class=qrCodePage()
-    if machine is not None and machine <= 1:
+    if machine:
         stacked_widget.addWidget(second_class)
         stacked_widget.addWidget(thrid_class)
         stacked_widget.addWidget(fourth_class)
