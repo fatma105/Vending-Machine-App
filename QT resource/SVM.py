@@ -109,7 +109,8 @@ class ProductClass(QMainWindow,FORM_CLASS1):
 
                 self.pushButton_7.clicked.connect(self.decreaseNumber)
     def increaseNumber(self):
-        num = int(self.lcdNumber_2.value())
+        num=int(self.lcdNumber_2.value())
+
         if num < self.products[0].amount:
             num += 1
             self.lcdNumber_2.display(num)
@@ -170,7 +171,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 # # Set the alignment of the label to center
                 # self.label_3.setAlignment(Qt.AlignCenter)
 
-                url = "https://i.pinimg.com/originals/54/18/df/5418df8a49e7eb6a048e80f7abcf61d8.png"
+                url = "https://firebasestorage.googleapis.com/v0/b/sigin-a0a4b.appspot.com/o/machine%2FFrozen%20food-pana.png?alt=media&token=d8392685-54b6-4ce6-8846-97b891b1e255"
                 response = requests.get(url)
                 pixmap = QPixmap()
                 pixmap.loadFromData(response.content)
@@ -213,7 +214,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 # # self.label_4.resize(100,100 )
                 # # Set the alignment of the label to center
                 # self.label_4.setAlignment(Qt.AlignCenter)
-                url = "https://i.pinimg.com/originals/54/18/df/5418df8a49e7eb6a048e80f7abcf61d8.png"
+                url = "https://firebasestorage.googleapis.com/v0/b/sigin-a0a4b.appspot.com/o/machine%2FFrozen%20food-pana.png?alt=media&token=d8392685-54b6-4ce6-8846-97b891b1e255"
                 response = requests.get(url)
                 pixmap = QPixmap()
                 pixmap.loadFromData(response.content)
@@ -251,6 +252,23 @@ class ProductClass(QMainWindow,FORM_CLASS1):
         else:
             stacked_widget.setCurrentIndex(1)
     def switchOrder(self):
+        
+        amount1=int(self.lcdNumber_2.value())
+        amount2=int(self.lcdNumber_3.value())
+        amount3=int(self.lcdNumber_4.value())
+        amount4=int(self.lcdNumber_5.value())
+        if amount1:
+            product=self.products[0]
+            machine.add_item_to_cart(product,amount1)
+        if amount2:
+            product=self.products[1]
+            machine.add_item_to_cart(product,amount2)
+        if amount3:
+            product=self.products[2]
+            machine.add_item_to_cart(product,amount3)
+        if amount4:
+            product=self.products[3]
+            machine.add_item_to_cart(product,amount4)   
         if machine:
             stacked_widget.setCurrentIndex(2)
         else:
@@ -258,24 +276,27 @@ class ProductClass(QMainWindow,FORM_CLASS1):
 
 FORM_CLASS2, _ = loadUiType(path.join(path.dirname(__file__), "order.ui"))
 class CheckoutWindow(QMainWindow,FORM_CLASS2):
-    def __init__(self,parent=None):
+    def __init__(self,machine,parent=None):
         super().__init__(parent)
         QMainWindow.__init__(self)
         self.setupUi(self)
+        self.machine=machine
         self.Handel_order()
         self.pushButton_back.clicked.connect(self.switchOrder)
         self.pushButton_5.clicked.connect(self.switchQRcode)
     def Handel_order(self):
         self.setWindowTitle('Checkout')
         #Date
-        date = "10/10"
+        now = datetime.datetime.now()
+        formatted_datetime = now.strftime("%Y-%m-%d %H:%M:%S")
+        date = formatted_datetime
         self.pushButton_2.setText(date)
         self.pushButton_2.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
         #list of products
-        self.listWidget.addItems(['Item 1', 'Item 2', 'Item 3'])
+        self.listWidget.addItems([])
         #total price
-        total_price = "100$"
-        self.pushButton_4.setText(total_price)
+        total_price = self.machine.order.total
+        self.pushButton_4.setText(f"{total_price}")
         self.pushButton_4.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
     def switchOrder(self):
         if machine:
@@ -287,6 +308,7 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
             stacked_widget.setCurrentIndex(3)
         else:
             stacked_widget.setCurrentIndex(4)
+                 
 FORRM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "qr code.ui"))
 class qrCodePage(QMainWindow,FORRM_CLASS):
     def __init__(self):
@@ -315,7 +337,7 @@ if __name__ == '__main__':
     first_class =Register()
     second_class = introPage()
     thrid_class = ProductClass(machine=machine)
-    fourth_class= CheckoutWindow()
+    fourth_class= CheckoutWindow(machine)
     fifth_class=qrCodePage()
     if machine:
         stacked_widget.addWidget(second_class)

@@ -1,4 +1,20 @@
 from models import *
+# Initialize the recognizer
+import speech_recognition as sr
+import pyttsx3
+
+# Initialize the recognizer
+r = sr.Recognizer()
+
+# Function to convert text to
+# speech
+def SpeakText(command):
+	
+	# Initialize the engine
+	engine = pyttsx3.init()
+	engine.say(command)
+	engine.runAndWait()
+	
 # Set up the stream on the order status path
 
 
@@ -6,18 +22,18 @@ machine=initialize_machine("machine@gmail.com","123456789")
 while True:
     #show items and take user input
     products=machine.get_products()
- 
     for product in products:
         print(vars(product))
     picked_item=input("item: ")
     item_amount=input("amount: ")
     #make a cart
     machine.add_item_to_cart(products[int(picked_item)] , int(item_amount))
-    machine.view_cart()
+    print(machine.order.items)
+    print(machine.view_cart())
     machine.save_order()
     #proces payment
+    machine.get_order_qrinfo()
     machine.initialize_process_order()
-    print(machine.get_order_qrinfo())
     machine.listen_to_order_status()
     i=True
     while i==True:
