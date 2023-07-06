@@ -71,19 +71,11 @@ class ProductClass(QMainWindow,FORM_CLASS1):
         self.Handle_product2()
         self.Handle_product3()
         self.Handle_product4()
-        # # Get the size of the user's screen
-        # screen_size = QDesktopWidget().screenGeometry()
-        # # Set the size of the window to fit the screen
-        # self.setGeometry(0, 0, screen_size.width(), screen_size.height())
         self.pushButton_5.clicked.connect(self.switch)
         self.pushButton_6.clicked.connect(self.switchOrder)
         
     def Handle_product1(self):
                 #ProductImage
-                # image_path=path.join(path.dirname(__file__),"./img/download (1).jpg")
-                # pixmap = QPixmap(image_path)
-                # # Set the pixmap as the label's image
-                # self.label.setPixmap(pixmap)
                 product1=self.products[0]
                 url = product1.imgUrl
                 response = requests.get(url)
@@ -121,11 +113,6 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             self.lcdNumber_2.display(num)
     def Handle_product2(self):
                 #ProductImage
-                # image_path=path.join(path.dirname(__file__),"./img/download (2).jpg")
-                # pixmap = QPixmap(image_path)
-                # # Set the pixmap as the label's image
-                # self.label_2.setPixmap(pixmap)
-                # self.label_2.setAlignment(Qt.AlignCenter)
                 product2=self.products[1]
                 url =product2.imgUrl
                 response = requests.get(url)
@@ -160,17 +147,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             num -= 1
             self.lcdNumber_3.display(num)
     def Handle_product3(self):
-                #ProductImage
-                # image_path=path.join(path.dirname(__file__),"./img/download (3).jpg")
-                # pixmap = QPixmap(image_path)
-                # # Set the pixmap as the label's image
-                # self.label_3.setPixmap(pixmap)
-                #
-                # # # Resize the label to fit the image
-                # # self.label_3.resize(100,100 )
-                # # Set the alignment of the label to center
-                # self.label_3.setAlignment(Qt.AlignCenter)
-
+                # ProductImage
                 url = "https://firebasestorage.googleapis.com/v0/b/sigin-a0a4b.appspot.com/o/machine%2FFrozen%20food-pana.png?alt=media&token=d8392685-54b6-4ce6-8846-97b891b1e255"
                 response = requests.get(url)
                 pixmap = QPixmap()
@@ -205,15 +182,6 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             self.lcdNumber_4.display(num)
     def Handle_product4(self):
                 #ProductImage
-                # image_path=path.join(path.dirname(__file__),"./img/download (4).jpg")
-                # pixmap = QPixmap(image_path)
-                # # Set the pixmap as the label's image
-                # self.label_4.setPixmap(pixmap)
-                #
-                # # # Resize the label to fit the image
-                # # self.label_4.resize(100,100 )
-                # # Set the alignment of the label to center
-                # self.label_4.setAlignment(Qt.AlignCenter)
                 url = "https://firebasestorage.googleapis.com/v0/b/sigin-a0a4b.appspot.com/o/machine%2FFrozen%20food-pana.png?alt=media&token=d8392685-54b6-4ce6-8846-97b891b1e255"
                 response = requests.get(url)
                 pixmap = QPixmap()
@@ -275,15 +243,17 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             stacked_widget.setCurrentIndex(3)
 
 FORM_CLASS2, _ = loadUiType(path.join(path.dirname(__file__), "order.ui"))
+
 class CheckoutWindow(QMainWindow,FORM_CLASS2):
     def __init__(self,machine,parent=None):
         super().__init__(parent)
         QMainWindow.__init__(self)
         self.setupUi(self)
-        self.machine=machine
         self.Handel_order()
         self.pushButton_back.clicked.connect(self.switchOrder)
         self.pushButton_5.clicked.connect(self.switchQRcode)
+        self.machine=machine
+        self.products=self.machine.get_products()
     def Handel_order(self):
         self.setWindowTitle('Checkout')
         #Date
@@ -293,6 +263,7 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
         self.pushButton_2.setText(date)
         self.pushButton_2.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
         #list of products
+        # if self.lcdNumber_2.value()!=0:
         self.listWidget.addItems([])
         #total price
         total_price = self.machine.order.total
