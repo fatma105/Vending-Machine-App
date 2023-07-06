@@ -247,7 +247,7 @@ QLCDNumber {
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_3">
+                 <widget class="QPushButton" name="LoginPButton">
                   <property name="text">
                    <string>LOGIN</string>
                   </property>

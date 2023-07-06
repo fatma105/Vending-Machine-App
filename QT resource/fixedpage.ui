@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>428</width>
-    <height>510</height>
+    <width>955</width>
+    <height>504</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,8 +53,8 @@ QLCDNumber {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>404</width>
-         <height>461</height>
+         <width>931</width>
+         <height>455</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -671,7 +671,7 @@ background-color: rgb(239, 239, 239);</string>
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_6">
+               <widget class="QPushButton" name="Buy">
                 <property name="minimumSize">
                  <size>
                   <width>114</width>
