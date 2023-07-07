@@ -263,9 +263,7 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
         date = formatted_datetime
         self.pushButton_2.setText(date)
         self.pushButton_2.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
-        #list of products
-        # if self.lcdNumber_2.value()!=0:
-        # self.listWidget.addItems([])
+
         #total price
         total_price = "self.machine.order.total"
         self.pushButton_4.setText(total_price)
@@ -273,12 +271,8 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
     def showOrder(self):
         if self.machine.order.items:
             order_data = machine.view_cart()
-            self.pushButton_6.setText(order_data[0])
-            self.pushButton_6.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
-            self.pushButton_2.setText(order_data[0])
-            self.pushButton_2.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
-        
-    
+            for item in order_data:
+                self.listWidget.addItem(str(item))
     
     def switchOrder(self):
         if machine:
