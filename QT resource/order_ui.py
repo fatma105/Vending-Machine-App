@@ -15,7 +15,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setEnabled(True)
-        MainWindow.resize(466, 512)
+        MainWindow.resize(697, 670)
         MainWindow.setStyleSheet("QLabel {\n"
 "  border-radius: 5px;\n"
 "    font-weight: bold;\n"
@@ -52,7 +52,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 442, 463))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 673, 621))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_2 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_2.setObjectName("gridLayout_2")
@@ -68,6 +68,7 @@ class Ui_MainWindow(object):
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.label_21 = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.label_21.setMaximumSize(QtCore.QSize(16777215, 60))
         self.label_21.setStyleSheet("\n"
 "font: 75 28pt \"Microsoft YaHei\";\n"
 "background-color: rgb(239, 239, 239);")
@@ -92,6 +93,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.pushButton_2)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.listWidget = QtWidgets.QListWidget(self.scrollAreaWidgetContents)
+        self.listWidget.setStyleSheet("QListWidget {\n"
+"    font-size:35px;\n"
+"    padding: 10px;\n"
+"    font-weight: bold;\n"
+"    border-radius: 5px;\n"
+"    color: black;\n"
+"}")
         self.listWidget.setObjectName("listWidget")
         self.verticalLayout.addWidget(self.listWidget)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
@@ -114,9 +122,9 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem2)
-        self.pushButton_5 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
-        self.pushButton_5.setObjectName("pushButton_5")
-        self.horizontalLayout_2.addWidget(self.pushButton_5)
+        self.SubmitpushButton_5 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.SubmitpushButton_5.setObjectName("SubmitpushButton_5")
+        self.horizontalLayout_2.addWidget(self.SubmitpushButton_5)
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem3)
         self.gridLayout.addLayout(self.horizontalLayout_2, 1, 0, 1, 1)
@@ -138,4 +146,4 @@ class Ui_MainWindow(object):
         self.label_21.setText(_translate("MainWindow", "Order details"))
         self.pushButton.setText(_translate("MainWindow", "Date:"))
         self.pushButton_3.setText(_translate("MainWindow", "Total Items:"))
-        self.pushButton_5.setText(_translate("MainWindow", "Submit"))
+        self.SubmitpushButton_5.setText(_translate("MainWindow", "Submit"))

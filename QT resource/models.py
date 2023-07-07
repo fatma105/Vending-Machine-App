@@ -78,7 +78,7 @@ class VendingMachine:
             self._process_order.listen_to_order_status()  
     
     def get_order_qrinfo(self):
-        if self.order.order_id and self._process_order:
+        if self.order.order_id:
             return f"{self.order.machine_id}/{self.order.order_id}"
         
     def get_order_status(self):

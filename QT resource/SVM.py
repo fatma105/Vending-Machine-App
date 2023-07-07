@@ -252,7 +252,7 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
         self.machine=machine
         self.Handel_order()
         self.pushButton_back.clicked.connect(self.switchOrder)
-        self.SubmitpushButton_5.clicked.connect(self.switchQRcode)
+        
 
 
     def Handel_order(self):
@@ -264,44 +264,50 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
         self.pushButton_2.setText(date)
         self.pushButton_2.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
 
-        #total price
-        total_price = "self.machine.order.total"
-        self.pushButton_4.setText(total_price)
-        self.pushButton_4.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
     def showOrder(self):
         if self.machine.order.items:
             order_data = machine.view_cart()
+            #total price
+            total_price =f"{self.machine.order.total}EGP"
+            self.pushButton_4.setText(total_price)
+            self.pushButton_4.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
             for item in order_data:
                 self.listWidget.addItem(str(item))
     
     def switchOrder(self):
-        if machine:
+        if machine.order.items:
+            self.listWidget.clear()
+            machine.clear_cart()
             stacked_widget.setCurrentIndex(1)
         else:
             stacked_widget.setCurrentIndex(2)
     def switchQRcode(self):
-        if machine:
+        if machine.order.items:
+            machine.save_order()
             stacked_widget.setCurrentIndex(3)
         else:
             stacked_widget.setCurrentIndex(4)
                  
 FORRM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "qr code.ui"))
 class qrCodePage(QMainWindow,FORRM_CLASS):
-    def __init__(self):
+    def __init__(self,machine):
         super().__init__()
         QMainWindow.__init__(self)
         self.setupUi(self)
-        self.generateCode()
+        self.machine=machine
+        #self.generateCode()
     def generateCode(self):
-        qr = qrcode.QRCode(version=1, box_size=10, border=4)
-        qr.add_data('https://www.google.com.eg/?hl=ar')
-        qr.make(fit=True)
-        img = qr.make_image(fill_color="black", back_color="white")
-        img.save('qrcode.png')
-        pixmap = QPixmap('qrcode.png')
-        self.label_2.setAlignment(Qt.AlignCenter)
-        self.label_2.setPixmap(pixmap)
-        self.pushButton.clicked.connect(self.switchOrder)
+        qr_info=machine.get_order_qrinfo()
+        if qr_info:
+            qr = qrcode.QRCode(version=1, box_size=10, border=4)
+            qr.add_data(qr_info)
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="black", back_color="white")
+            img.save('qrcode.png')
+            pixmap = QPixmap('qrcode.png')
+            self.label_2.setAlignment(Qt.AlignCenter)
+            self.label_2.setPixmap(pixmap)
+            self.pushButton.clicked.connect(self.switchOrder)
     def switchOrder(self):
         if machine:
             stacked_widget.setCurrentIndex(2)
@@ -314,7 +320,7 @@ if __name__ == '__main__':
     second_class = introPage()
     thrid_class = ProductClass(machine=machine)
     fourth_class= CheckoutWindow(machine)
-    fifth_class=qrCodePage()
+    fifth_class=qrCodePage(machine)
     
     stacked_widget.addWidget(second_class)
     stacked_widget.addWidget(thrid_class)
@@ -323,6 +329,9 @@ if __name__ == '__main__':
 
     thrid_class.Buy.clicked.connect(thrid_class.switchOrder)
     thrid_class.Buy.clicked.connect(fourth_class.showOrder)
+
+    fourth_class.SubmitpushButton_5.clicked.connect(fourth_class.switchQRcode)
+    fourth_class.SubmitpushButton_5.clicked.connect(fifth_class.generateCode)
 
     stacked_widget.show()
     sys.exit(app.exec_())
