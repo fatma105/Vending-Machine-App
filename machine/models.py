@@ -265,7 +265,7 @@ class Order:
         if self.items:
             print("Items in the order:")
             for item in self.items:
-                txt=f"{item['product'].name}: {item['quantity']} x ${item['product'].price} = ${item['subtotal']}"
+                txt=f"{item['product'].name}: {item['quantity']} x EGP{item['product'].price} = EGP{item['subtotal']}"
                 print(txt)
                 
                 orderlist.append(txt)
