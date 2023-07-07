@@ -72,7 +72,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
         self.Handle_product3()
         self.Handle_product4()
         self.pushButton_5.clicked.connect(self.switch)
-        self.Buy.clicked.connect(self.switchOrder)
+        
         
     def Handle_product1(self):
                 #ProductImage
@@ -245,10 +245,11 @@ class ProductClass(QMainWindow,FORM_CLASS1):
 FORM_CLASS2, _ = loadUiType(path.join(path.dirname(__file__), "order.ui"))
 
 class CheckoutWindow(QMainWindow,FORM_CLASS2):
-    def __init__(self,parent=None):
+    def __init__(self,machine,parent=None):
         super().__init__(parent)
         QMainWindow.__init__(self)
         self.setupUi(self)
+        self.machine=machine
         self.Handel_order()
         self.pushButton_back.clicked.connect(self.switchOrder)
         self.SubmitpushButton_5.clicked.connect(self.switchQRcode)
@@ -265,12 +266,20 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
         #list of products
         # if self.lcdNumber_2.value()!=0:
         # self.listWidget.addItems([])
-        self.pushButton_2.setText(date)
-        self.pushButton_2.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
         #total price
         total_price = "self.machine.order.total"
         self.pushButton_4.setText(total_price)
         self.pushButton_4.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
+    def showOrder(self):
+        if self.machine.order.items:
+            order_data = machine.view_cart()
+            self.pushButton_6.setText(order_data[0])
+            self.pushButton_6.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
+            self.pushButton_2.setText(order_data[0])
+            self.pushButton_2.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
+        
+    
+    
     def switchOrder(self):
         if machine:
             stacked_widget.setCurrentIndex(1)
@@ -310,19 +319,17 @@ if __name__ == '__main__':
     first_class =Register()
     second_class = introPage()
     thrid_class = ProductClass(machine=machine)
-    fourth_class= CheckoutWindow()
+    fourth_class= CheckoutWindow(machine)
     fifth_class=qrCodePage()
-    if machine:
-        stacked_widget.addWidget(second_class)
-        stacked_widget.addWidget(thrid_class)
-        stacked_widget.addWidget(fourth_class)
-        stacked_widget.addWidget(fifth_class)
-    else:
-        stacked_widget.addWidget(first_class)
-        stacked_widget.addWidget(second_class)
-        stacked_widget.addWidget(thrid_class)
-        stacked_widget.addWidget(fourth_class)
-        stacked_widget.addWidget(fifth_class)
+    
+    stacked_widget.addWidget(second_class)
+    stacked_widget.addWidget(thrid_class)
+    stacked_widget.addWidget(fourth_class)
+    stacked_widget.addWidget(fifth_class)
+
+    thrid_class.Buy.clicked.connect(thrid_class.switchOrder)
+    thrid_class.Buy.clicked.connect(fourth_class.showOrder)
+
     stacked_widget.show()
     sys.exit(app.exec_())
 

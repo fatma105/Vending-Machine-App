@@ -59,7 +59,7 @@ class VendingMachine:
     def add_item_to_cart(self, product, quantity=1):
         self.order.add_item(product,quantity)
     def view_cart(self):
-        self.order.view_order()  
+       return self.order.view_order()  
     
     def clear_cart(self):
         self.order.clear_cart()
@@ -262,12 +262,14 @@ class Order:
     def view_order(self):
         if self.items:
             print("Items in the order:")
+            order=[]
             for item in self.items:
                 
-                print(f"{item['product'].name}: {item['quantity']} x ${item['product'].price} = ${item['subtotal']}")
+                order.append(f"{item['product'].name}: {item['quantity']} x ${item['product'].price} = ${item['subtotal']}")
             print(f"Total: ${self.total}")
+            return order    
         else:
-            print("The order is empty.")
+            None
 
     def save_order(self):
         items=[]
