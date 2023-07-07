@@ -35,8 +35,8 @@ class Register(QMainWindow, FORM_CLASS):
 
     def Handle_signup(self):
         # if self.lineEdit_2.text() != "" or self.lineEdit_3.text() != "":
-        self.pushButton_3.clicked.connect(self.Handle_register)
-        self.pushButton_3.clicked.connect(self.switchLogin)
+        self.LoginPButton.clicked.connect(self.Handle_register)
+        self.LoginPButton.clicked.connect(self.switchLogin)
 
     def switchLogin(self):
         stacked_widget.setCurrentIndex(1)
@@ -49,7 +49,7 @@ class introPage(QMainWindow,FORRM_CLASS):
         self.setWindowTitle('Smart Vending Machine')
         self.centralwidget= QGridLayout()
         self.setLayout(self.centralwidget)
-        self.pushButton.clicked.connect(self.switch)
+        self.LogoPB.clicked.connect(self.switch)
         # self.VendingMachine=machine
     def switch(self):
         if machine:
@@ -72,7 +72,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
         self.Handle_product3()
         self.Handle_product4()
         self.pushButton_5.clicked.connect(self.switch)
-        self.pushButton_6.clicked.connect(self.switchOrder)
+        self.Buy.clicked.connect(self.switchOrder)
         
     def Handle_product1(self):
                 #ProductImage
@@ -245,15 +245,15 @@ class ProductClass(QMainWindow,FORM_CLASS1):
 FORM_CLASS2, _ = loadUiType(path.join(path.dirname(__file__), "order.ui"))
 
 class CheckoutWindow(QMainWindow,FORM_CLASS2):
-    def __init__(self,machine,parent=None):
+    def __init__(self,parent=None):
         super().__init__(parent)
         QMainWindow.__init__(self)
         self.setupUi(self)
         self.Handel_order()
         self.pushButton_back.clicked.connect(self.switchOrder)
-        self.pushButton_5.clicked.connect(self.switchQRcode)
-        self.machine=machine
-        self.products=self.machine.get_products()
+        self.SubmitpushButton_5.clicked.connect(self.switchQRcode)
+
+
     def Handel_order(self):
         self.setWindowTitle('Checkout')
         #Date
@@ -264,10 +264,12 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
         self.pushButton_2.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
         #list of products
         # if self.lcdNumber_2.value()!=0:
-        self.listWidget.addItems([])
+        # self.listWidget.addItems([])
+        self.pushButton_2.setText(date)
+        self.pushButton_2.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
         #total price
-        total_price = self.machine.order.total
-        self.pushButton_4.setText(f"{total_price}")
+        total_price = "self.machine.order.total"
+        self.pushButton_4.setText(total_price)
         self.pushButton_4.setStyleSheet("color: black;background-color: rgb(255, 255, 255);")
     def switchOrder(self):
         if machine:
@@ -308,7 +310,7 @@ if __name__ == '__main__':
     first_class =Register()
     second_class = introPage()
     thrid_class = ProductClass(machine=machine)
-    fourth_class= CheckoutWindow(machine)
+    fourth_class= CheckoutWindow()
     fifth_class=qrCodePage()
     if machine:
         stacked_widget.addWidget(second_class)
