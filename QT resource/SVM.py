@@ -220,6 +220,11 @@ class ProductClass(QMainWindow,FORM_CLASS1):
         else:
             stacked_widget.setCurrentIndex(1)
     def switchOrder(self):
+
+
+        #handle order in a different function
+
+        #disable but button while no order
         
         amount1=int(self.lcdNumber_2.value())
         amount2=int(self.lcdNumber_3.value())
@@ -284,6 +289,8 @@ class CheckoutWindow(QMainWindow,FORM_CLASS2):
     def switchQRcode(self):
         if machine.order.items:
             machine.save_order()
+            machine.initialize_process_order()
+            self.listWidget.clear()
             stacked_widget.setCurrentIndex(3)
         else:
             stacked_widget.setCurrentIndex(4)
@@ -308,11 +315,63 @@ class qrCodePage(QMainWindow,FORRM_CLASS):
             self.label_2.setAlignment(Qt.AlignCenter)
             self.label_2.setPixmap(pixmap)
             self.pushButton.clicked.connect(self.switchOrder)
+    def handel_payment(self):
+        self.payment_worker=PaymentWorker()
+        self.payment_worker.start()
+        self.payment_worker.finished.connect(self.payment_worker_finished)
+        self.payment_worker.update_status.connect(self.update_lable)
+        
+
+    def payment_worker_finished(self):
+        stacked_widget.setCurrentIndex(1)
+
+
+    def update_lable(self,text):
+        self.label.setText('Scan Me')   
+        self.label_2.setText(text)       
+
     def switchOrder(self):
         if machine:
             stacked_widget.setCurrentIndex(2)
         else:
             stacked_widget.setCurrentIndex(3)
+
+
+#payment handler
+class PaymentWorker(QThread):
+
+    update_status=pyqtSignal(str)
+
+    def run(self):
+        machine.listen_to_order_status()
+        i=True
+        while i==True:
+            status=machine.get_order_status()
+            time.sleep(0.1)
+            if status==10:
+                self.update_status.emit("QR SCANNED PROCESSING PAYMENT....")
+            elif status == 20:
+                self.update_status.emit("PAYMENT SUCCESS,DISPENSING ITEMS....")
+                #hardware logic here
+                machine.update_stock()
+                machine.clear_cart()
+                machine.clear_process_order()
+                time.sleep(3)
+                i=False
+            elif status == 30:
+                self.update_status.emit("PAYMENT FAILED....")
+                machine.clear_cart()
+                machine.clear_process_order()
+                time.sleep(3)
+                i=False
+            elif status == 100:
+                self.update_status.emit("PROCESS TIME OUT")
+                machine.clear_cart()
+                machine.clear_process_order()
+                time.sleep(3)
+                i=False    
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     stacked_widget = QStackedWidget()
@@ -332,6 +391,8 @@ if __name__ == '__main__':
 
     fourth_class.SubmitpushButton_5.clicked.connect(fourth_class.switchQRcode)
     fourth_class.SubmitpushButton_5.clicked.connect(fifth_class.generateCode)
+    fourth_class.SubmitpushButton_5.clicked.connect(fifth_class.handel_payment)
+    
 
     stacked_widget.show()
     sys.exit(app.exec_())

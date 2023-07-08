@@ -145,5 +145,5 @@ class Ui_MainWindow(object):
         self.pushButton_back.setText(_translate("MainWindow", "Back"))
         self.label_21.setText(_translate("MainWindow", "Order details"))
         self.pushButton.setText(_translate("MainWindow", "Date:"))
-        self.pushButton_3.setText(_translate("MainWindow", "Total Items:"))
+        self.pushButton_3.setText(_translate("MainWindow", "Total Price:"))
         self.SubmitpushButton_5.setText(_translate("MainWindow", "Submit"))
