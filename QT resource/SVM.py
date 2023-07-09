@@ -16,7 +16,7 @@ import Hardware
 
 
 machine=None
-machine=initialize_machine("machine@gmail.com","123456789")
+machine=initialize_machine("machine4@gmail.com","123456789")
 
 FORM_CLASS, _ = loadUiType(path.join(path.dirname(__file__), "login.ui"))
 
@@ -149,7 +149,8 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             self.lcdNumber_3.display(num)
     def Handle_product3(self):
                 # ProductImage
-                url = "https://firebasestorage.googleapis.com/v0/b/sigin-a0a4b.appspot.com/o/machine%2FFrozen%20food-pana.png?alt=media&token=d8392685-54b6-4ce6-8846-97b891b1e255"
+                product3=self.products[2]
+                url = product3.imgUrl
                 response = requests.get(url)
                 pixmap = QPixmap()
                 pixmap.loadFromData(response.content)
@@ -159,11 +160,11 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 self.label_3.setAlignment(Qt.AlignCenter)
 
                 # ProductName
-                ProductName3="Lambada"
+                ProductName3=product3.name
                 self.pushButton_53.setText(ProductName3)
                 self.pushButton_53.setEnabled(False)
                 #price
-                ProductPrice3 = "Price:05$"
+                ProductPrice3 = f"Price:{product3.price}EGP"
                 self.pushButton_54.setText(ProductPrice3)
                 #LCD
                 self.lcdNumber_4.setSegmentStyle(QLCDNumber.Flat)
@@ -173,7 +174,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 self.pushButton_9.clicked.connect(self.decreaseNumber3)
     def increaseNumber3(self):
         num = int(self.lcdNumber_4.value())
-        if num < 100:
+        if num < self.products[2].amount:
             num += 1
             self.lcdNumber_4.display(num)
     def decreaseNumber3(self):
@@ -183,7 +184,8 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             self.lcdNumber_4.display(num)
     def Handle_product4(self):
                 #ProductImage
-                url = "https://firebasestorage.googleapis.com/v0/b/sigin-a0a4b.appspot.com/o/machine%2FFrozen%20food-pana.png?alt=media&token=d8392685-54b6-4ce6-8846-97b891b1e255"
+                product4=self.products[3]
+                url =product4.imgUrl
                 response = requests.get(url)
                 pixmap = QPixmap()
                 pixmap.loadFromData(response.content)
@@ -192,11 +194,11 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 # Set the alignment of the label to center
                 self.label_4.setAlignment(Qt.AlignCenter)
                 # ProductName
-                ProductName4="Galaxy"
+                ProductName4=product4.name
                 self.pushButton_55.setText(ProductName4)
                 self.pushButton_55.setEnabled(False)
                 #price
-                ProductPrice4 = "Price:20$"
+                ProductPrice4 = f"Price:{product4.price}EGP"
                 self.pushButton_56.setText(ProductPrice4)
                 self.pushButton_56.setEnabled(False)
                 #LCD
@@ -207,7 +209,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
                 self.pushButton_10.clicked.connect(self.decreaseNumber4)
     def increaseNumber4(self):
         num = int(self.lcdNumber_5.value())
-        if num < 100:
+        if num < self.products[3].amount:
             num += 1
             self.lcdNumber_5.display(num)
     def decreaseNumber4(self):
@@ -355,6 +357,7 @@ class PaymentWorker(QThread):
                 self.update_status.emit("PAYMENT SUCCESS,DISPENSING ITEMS....")
                 #hardware logic here
                 order_list=machine.create_order_list()
+                print(order_list)
                 Hardware.dispense_items(order_list)
                 machine.update_stock()
                 machine.clear_cart()

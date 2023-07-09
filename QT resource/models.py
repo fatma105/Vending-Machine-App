@@ -68,11 +68,11 @@ class VendingMachine:
         if self.order.items:
             self.order.save_order() 
     def create_order_list(self):
-        order_list=[]
+        order_list=''
         for item in self.order.items:
          product=item['product']
          amount=item['quantity']
-         order_list.append( f"{product.position}"*amount ) 
+         order_list+=( f"{product.position}"*amount ) 
         return order_list        
 #process order                 
     def initialize_process_order(self):

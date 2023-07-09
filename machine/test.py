@@ -24,32 +24,35 @@ while True:
     products=machine.get_products()
     for product in products:
         print(vars(product))
-    picked_item=input("item: ")
-    item_amount=input("amount: ")
+    # picked_item=input("item: ")
+    # item_amount=input("amount: ")
     #make a cart
-    machine.add_item_to_cart(products[int(picked_item)] , int(item_amount))
+    machine.add_item_to_cart(products[0] , 2)
+    machine.add_item_to_cart(products[1] , 2)
     print(machine.order.items)
-    print(machine.view_cart())       
-    machine.save_order()
-    #proces payment
-    machine.get_order_qrinfo()
-    machine.initialize_process_order()
-    machine.listen_to_order_status()
-    i=True
-    while i==True:
-        status=machine.get_order_status()
-        time.sleep(0.1)
-        if status == 20:
-            machine.update_stock()
-            machine.clear_cart()
-            machine.clear_process_order()
-            time.sleep(3)
-            i=False
-        elif status in [30,100]:
-            machine.clear_cart()
-            machine.clear_process_order()
-            time.sleep(3)
-            i=False
+    print(machine.view_cart())  
+    order_list=machine.create_order_list()
+    print(order_list)     
+    # machine.save_order()
+    # #proces payment
+    # machine.get_order_qrinfo()
+    # machine.initialize_process_order()
+    # machine.listen_to_order_status()
+    # i=True
+    # while i==True:
+    #     status=machine.get_order_status()
+    #     time.sleep(0.1)
+    #     if status == 20:
+    #         machine.update_stock()
+    #         machine.clear_cart()
+    #         machine.clear_process_order()
+    #         time.sleep(3)
+    #         i=False
+    #     elif status in [30,100]:
+    #         machine.clear_cart()
+    #         machine.clear_process_order()
+    #         time.sleep(3)
+    #         i=False
 
 
 
