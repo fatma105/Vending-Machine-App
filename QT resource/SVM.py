@@ -222,13 +222,7 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             stacked_widget.setCurrentIndex(0)
         else:
             stacked_widget.setCurrentIndex(1)
-    def switchOrder(self):
-
-
-        #handle order in a different function
-
-        #disable but button while no order
-        
+    def takeOrder(self):
         amount1=int(self.lcdNumber_2.value())
         amount2=int(self.lcdNumber_3.value())
         amount3=int(self.lcdNumber_4.value())
@@ -244,11 +238,26 @@ class ProductClass(QMainWindow,FORM_CLASS1):
             machine.add_item_to_cart(product,amount3)
         if amount4:
             product=self.products[3]
-            machine.add_item_to_cart(product,amount4)   
-        if machine:
+            machine.add_item_to_cart(product,amount4)
+    def clearLCD(self):
+        self.lcdNumber_2.display('')
+        self.lcdNumber_3.display('')
+        self.lcdNumber_4.display('')
+        self.lcdNumber_5.display('')
+
+
+              
+    def switchOrder(self):
+        self.takeOrder()
+        if machine.order.items:
             stacked_widget.setCurrentIndex(2)
-        else:
-            stacked_widget.setCurrentIndex(3)
+      
+
+        #handle order in a different function
+
+        #disable but button while no order
+        
+       
 
 FORM_CLASS2, _ = loadUiType(path.join(path.dirname(__file__), "order.ui"))
 
@@ -326,7 +335,7 @@ class qrCodePage(QMainWindow,FORRM_CLASS):
         
 
     def payment_worker_finished(self):
-        stacked_widget.setCurrentIndex(1)
+        stacked_widget.setCurrentIndex(0)
 
 
     def update_lable(self,text):
@@ -394,7 +403,7 @@ if __name__ == '__main__':
 
     thrid_class.Buy.clicked.connect(thrid_class.switchOrder)
     thrid_class.Buy.clicked.connect(fourth_class.showOrder)
-
+    fourth_class.SubmitpushButton_5.clicked.connect(thrid_class.clearLCD)
     fourth_class.SubmitpushButton_5.clicked.connect(fourth_class.switchQRcode)
     fourth_class.SubmitpushButton_5.clicked.connect(fifth_class.generateCode)
     fourth_class.SubmitpushButton_5.clicked.connect(fifth_class.handel_payment)
