@@ -29,7 +29,7 @@ while True:
     #make a cart
     machine.add_item_to_cart(products[int(picked_item)] , int(item_amount))
     print(machine.order.items)
-    print(machine.view_cart())
+    print(machine.view_cart())       
     machine.save_order()
     #proces payment
     machine.get_order_qrinfo()

@@ -12,6 +12,7 @@ import requests
 # from models import initialize_machine
 # machine=initialize_machine("machine@mail.com","123456")
 from models import *
+import Hardware
 
 
 machine=None
@@ -353,23 +354,25 @@ class PaymentWorker(QThread):
             elif status == 20:
                 self.update_status.emit("PAYMENT SUCCESS,DISPENSING ITEMS....")
                 #hardware logic here
+                order_list=machine.create_order_list()
+                Hardware.dispense_items(order_list)
                 machine.update_stock()
                 machine.clear_cart()
                 machine.clear_process_order()
                 time.sleep(3)
-                i=False
+                break
             elif status == 30:
                 self.update_status.emit("PAYMENT FAILED....")
                 machine.clear_cart()
                 machine.clear_process_order()
                 time.sleep(3)
-                i=False
+                break
             elif status == 100:
                 self.update_status.emit("PROCESS TIME OUT")
                 machine.clear_cart()
                 machine.clear_process_order()
                 time.sleep(3)
-                i=False    
+                break   
 
 
 if __name__ == '__main__':

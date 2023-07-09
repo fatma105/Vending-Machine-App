@@ -67,6 +67,13 @@ class VendingMachine:
     def save_order(self):
         if self.order.items:
             self.order.save_order() 
+    def create_order_list(self):
+        order_list=[]
+        for item in self.order.items:
+         product=item['product']
+         amount=item['quantity']
+         order_list.append( f"{product.position}"*amount ) 
+        return order_list        
 #process order                 
     def initialize_process_order(self):
         if self.order.items:
@@ -201,7 +208,8 @@ class Product:
         self.imgUrl=product['image']
         self.price=product['price']
         self.amount=product['amount'] 
-        self.position=product['position'] 
+        self.position=product['position']
+        self.details=product['details'] 
     def get_product_data(self):
         product=db.child('machine-products').child(self.machine_id).child(self.product_id).get().val()
         return product
@@ -278,7 +286,7 @@ class Order:
             quantity=item['quantity']
             subtotal=item['subtotal']
             items={
-               product.product_id:{'name':product.name,'price':product.price,'quantity':quantity,'subtotal':subtotal }
+               product.product_id:{'name':product.name,'price':product.price,'details':product.details,'quantity':quantity,'subtotal':subtotal }
             }
         machine_order={
             'order':items,
@@ -319,7 +327,7 @@ class ProcessOrder:
 
     def listen_to_order_status(self):
         self.order_status_stream = db.child("machine-orders").child(self.order.machine_id).child(self.order.order_id).child("status").stream(self.order_status_stream_handler)
-        self.timer=threading.Timer(30,self._connection_time_out)
+        self.timer=threading.Timer(100,self._connection_time_out)
         self.timer.start()
                             
     def close_stream(self):
