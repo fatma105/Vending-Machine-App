@@ -59,7 +59,7 @@ class VendingMachine:
     def add_item_to_cart(self, product, quantity=1):
         self.order.add_item(product,quantity)
     def view_cart(self):
-        return self.order.view_order()  
+       return self.order.view_order()  
     
     def clear_cart(self):
         self.order.clear_cart()
@@ -73,7 +73,7 @@ class VendingMachine:
          product=item['product']
          amount=item['quantity']
          order_list+=( f"{product.position}"*amount ) 
-        return order_list         
+        return order_list        
 #process order                 
     def initialize_process_order(self):
         if self.order.items:
@@ -85,7 +85,7 @@ class VendingMachine:
             self._process_order.listen_to_order_status()  
     
     def get_order_qrinfo(self):
-        if self.order.order_id and self._process_order:
+        if self.order.order_id:
             return f"{self.order.machine_id}/{self.order.order_id}"
         
     def get_order_status(self):
@@ -208,7 +208,8 @@ class Product:
         self.imgUrl=product['image']
         self.price=product['price']
         self.amount=product['amount'] 
-        self.position=product['position'] 
+        self.position=product['position']
+        self.details=product['details'] 
     def get_product_data(self):
         product=db.child('machine-products').child(self.machine_id).child(self.product_id).get().val()
         return product
@@ -267,21 +268,16 @@ class Order:
 
         print(f"{quantity} {product.name}(s) added to the order.")
     def view_order(self):
-        orderlist=[]
-        print(orderlist)
         if self.items:
             print("Items in the order:")
+            order=[]
             for item in self.items:
-                txt=f"{item['product'].name}: {item['quantity']} x EGP{item['product'].price} = EGP{item['subtotal']}"
-                print(txt)
                 
-                orderlist.append(txt)
-                print(orderlist)
+                order.append(f"{item['product'].name}: {item['quantity']} x ${item['product'].price} = ${item['subtotal']}")
             print(f"Total: ${self.total}")
+            return order    
         else:
-            print("The order is empty.")
-        print(orderlist)    
-        return orderlist    
+            None
 
     def save_order(self):
         items=[]
@@ -290,7 +286,7 @@ class Order:
             quantity=item['quantity']
             subtotal=item['subtotal']
             items={
-               product.product_id:{'name':product.name,'price':product.price,'quantity':quantity,'subtotal':subtotal }
+               product.product_id:{'name':product.name,'price':product.price,'details':product.details,'quantity':quantity,'subtotal':subtotal }
             }
         machine_order={
             'order':items,
@@ -331,7 +327,7 @@ class ProcessOrder:
 
     def listen_to_order_status(self):
         self.order_status_stream = db.child("machine-orders").child(self.order.machine_id).child(self.order.order_id).child("status").stream(self.order_status_stream_handler)
-        self.timer=threading.Timer(30,self._connection_time_out)
+        self.timer=threading.Timer(100,self._connection_time_out)
         self.timer.start()
                             
     def close_stream(self):
