@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(428, 510)
+        MainWindow.resize(955, 504)
         MainWindow.setStyleSheet("QLabel {\n"
 "  border-radius: 5px;\n"
 "  padding: 10px;\n"
@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 404, 461))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 931, 455))
         self.scrollAreaWidgetContents.setMinimumSize(QtCore.QSize(0, 419))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
@@ -282,11 +282,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
         spacerItem2 = QtWidgets.QSpacerItem(40, 0, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_7.addItem(spacerItem2)
-        self.pushButton_6 = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
-        self.pushButton_6.setMinimumSize(QtCore.QSize(114, 0))
-        self.pushButton_6.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.pushButton_6.setObjectName("pushButton_6")
-        self.horizontalLayout_7.addWidget(self.pushButton_6)
+        self.Buy = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.Buy.setMinimumSize(QtCore.QSize(114, 0))
+        self.Buy.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.Buy.setObjectName("Buy")
+        self.horizontalLayout_7.addWidget(self.Buy)
         spacerItem3 = QtWidgets.QSpacerItem(40, 0, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_7.addItem(spacerItem3)
         self.verticalLayout_6.addLayout(self.horizontalLayout_7)
@@ -315,4 +315,4 @@ class Ui_MainWindow(object):
         self.plus_button_3.setText(_translate("MainWindow", "+"))
         self.pushButton_10.setText(_translate("MainWindow", "-"))
         self.plus_button_4.setText(_translate("MainWindow", "+"))
-        self.pushButton_6.setText(_translate("MainWindow", "Buy"))
+        self.Buy.setText(_translate("MainWindow", "Buy"))

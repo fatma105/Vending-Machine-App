@@ -59,7 +59,7 @@ class VendingMachine:
     def add_item_to_cart(self, product, quantity=1):
         self.order.add_item(product,quantity)
     def view_cart(self):
-        return self.order.view_order()  
+       return self.order.view_order()  
     
     def clear_cart(self):
         self.order.clear_cart()
@@ -78,7 +78,7 @@ class VendingMachine:
             self._process_order.listen_to_order_status()  
     
     def get_order_qrinfo(self):
-        if self.order.order_id and self._process_order:
+        if self.order.order_id:
             return f"{self.order.machine_id}/{self.order.order_id}"
         
     def get_order_status(self):
@@ -260,21 +260,16 @@ class Order:
 
         print(f"{quantity} {product.name}(s) added to the order.")
     def view_order(self):
-        orderlist=[]
-        print(orderlist)
         if self.items:
             print("Items in the order:")
+            order=[]
             for item in self.items:
-                txt=f"{item['product'].name}: {item['quantity']} x EGP{item['product'].price} = EGP{item['subtotal']}"
-                print(txt)
                 
-                orderlist.append(txt)
-                print(orderlist)
+                order.append(f"{item['product'].name}: {item['quantity']} x ${item['product'].price} = ${item['subtotal']}")
             print(f"Total: ${self.total}")
+            return order    
         else:
-            print("The order is empty.")
-        print(orderlist)    
-        return orderlist    
+            None
 
     def save_order(self):
         items=[]
