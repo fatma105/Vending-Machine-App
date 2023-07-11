@@ -14,7 +14,10 @@ def dispense_items(data):
         ser.write(data.encode())
 
         # Wait for a response (if expecting one)
-        response = ser.readline().decode().strip()
+        response = None
+        while response not in['0','1']:
+            response = ser.readline().decode().strip()
+        
         print("Response:", response)
 
     except serial.SerialException as e:
