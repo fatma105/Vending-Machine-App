@@ -10,12 +10,14 @@ def dispense_items(data):
         if not ser.is_open:
             ser.open()
 
+        data+="\n"    
+
         # Send the data to the device
         ser.write(data.encode())
 
         # Wait for a response (if expecting one)
         response = None
-        while response not in['0','1']:
+        while not response:
             response = ser.readline().decode().strip()
         
         print("Response:", response)
