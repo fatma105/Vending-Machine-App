@@ -86,7 +86,7 @@ class VendingMachine:
             print("order scanned")
         elif self.order.status==20:
             print("Succeses")
-            print("dispencing items.....")
+            print("dispensing items.....")
             #hardware function here.......
             #self._process_order.update_stock()
             self._process_order.close_timer()
